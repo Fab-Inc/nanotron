@@ -9,7 +9,7 @@ authors = [
     {name = "Thomas Wolf", email="thomas@huggingface.co"},
 ]
 readme = "README.md"
-requires-python = "~=3.10"
+requires-python = "~=3.11.0"
 classifiers = [
     "Topic :: Software Development"
 ]
@@ -22,11 +22,8 @@ dependencies = [
     "dacite",
     "tqdm",
     "datasets",
-    "torchtyping"
+    "torchtyping",
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]  # list of folders that contain the packages (["."] by default)
 
 [tool.ruff]
 line-length = 119
@@ -34,8 +31,23 @@ ignore = ["C901","E501"] # E501 ignores length violation handled by black
 select = ["C","E","F","I","W"]
 ignore-init-module-imports = true
 
-[project.optional-dependencies]
+[tool.uv.extra-build-dependencies]
+flash-attn = ["wheel", "torch", "psutil"]
+
+[tool.uv]
+no-build-isolation-package = ['flash-attn']
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu124"
+
+[tool.uv.sources]
+torch = {index = "pytorch"}
+
+[dependency-groups]
 dev = [
+    "wheel",
+    "psutil",
     "pre-commit",
     "pylint"
 ]
@@ -51,7 +63,7 @@ fast-modeling = [
 
 nanosets = [
      "transformers",
-     "datatrove[io,processing]@git+https://github.com/huggingface/datatrove",
+     "datatrove[io,processing]",
      "numba",
 ]
 
@@ -62,9 +74,11 @@ s3 = [
 ]
 
 [build-system]
-requires = [
-    "setuptools",
-]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nanotron"]
 
 [pytest]
 norecursedirs="tests/helpers"

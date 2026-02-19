@@ -21,7 +21,7 @@ dependencies = [
     "safetensors",
     "dacite",
     "tqdm",
-    "datasets",
+    "datasets>=4",
     "torchtyping",
 ]
 
@@ -40,6 +40,7 @@ no-build-isolation-package = ['flash-attn']
 [[tool.uv.index]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cu124"
+explicit = true
 
 [tool.uv.sources]
 torch = {index = "pytorch"}
@@ -49,21 +50,25 @@ dev = [
     "wheel",
     "psutil",
     "pre-commit",
-    "pylint"
+    "pylint",
+    "ipykernel",
 ]
 
 test = [
     "pytest",
-    "pytest-xdist"
+    "pytest-xdist",
+    "pytest-coverage",
 ]
 
 fast-modeling = [
+    "ninja",
+    "triton",
     "flash-attn>=2.5.0,<2.7.0",
 ]
 
 nanosets = [
      "transformers",
-     "datatrove[io,processing]",
+     "datatrove[io,processing]>=0.2.0",
      "numba",
 ]
 
@@ -73,6 +78,11 @@ s3 = [
     "s5cmd",
 ]
 
+az = [
+    "cloudpathlib[azure]",
+    "python-dotenv",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -80,5 +90,5 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/nanotron"]
 
-[pytest]
+[tool.pytest.custom_ini]
 norecursedirs="tests/helpers"

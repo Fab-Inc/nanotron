@@ -1,6 +1,6 @@
 checkpoints:
   checkpoint_interval: 1000
-  checkpoints_path: /scratch/loubna/checkpoints
+  checkpoints_path: /data/checkpoints
   checkpoints_path_is_shared_file_system: false
   load_lr_scheduler: true
   load_optimizer: true
@@ -10,24 +10,10 @@ checkpoints:
 data_stages:
 - data:
     dataset:
-      dataset_read_path:
-      - /fsx/loubna/projects_v2/data/blog/fineweb-edu
-      - /fsx/loubna/projects_v2/data/blog/finemath-3plus
-      - /fsx/loubna/projects_v2/data/blog/stack-edu-python
-      dataset_folder:
-      - s3://smollm3/datasets/llama_tokenized-global-chunks/fineweb-edu/fineweb-edu/
-      - s3://smollm3/datasets/llama_tokenized-individual-chunks/finemath/
-      - s3://smollm3/datasets/llama_tokenized-individual-chunks/stack-edu-Python/
-      dataset_weights:
-      - 0.7
-      - 0.1
-      - 0.2
-      pad_samples_to_global_batch_size: false
-      return_positions: true
-      token_size_in_bytes: 4
-      tokenizer_name: HuggingFaceTB/SmolLM3-3B
-      use_old_brrr_dataloader: false
-      vocab_size: 128256
+      hf_dataset_or_datasets: az://quratingscoressa/quratingfiltered-noemb/qurater_gemma-3-4b-pt_ds-ours_v2-200000
+      hf_dataset_config_name: null
+      hf_dataset_splits:
+        - "train"
     num_loading_workers: 0
     seed: 6
   name: stable
@@ -36,13 +22,13 @@ general:
   benchmark_csv_path: null
   consumed_train_samples: null
   ignore_sanity_checks: true
-  project: smollm3-blog
+  project: azure-test
   run: baseline
   seed: 6
   step: null
 logging:
   iteration_step_info_interval: 1
-  log_level: info
+  log_level: debug
   log_level_replica: info
 model:
   ddp_bucket_cap_mb: 50
@@ -103,9 +89,8 @@ optimizer:
   zero_stage: 0
 parallelism:
   context_parallel_size: 1
-  dp: 8
+  dp: 1
   expert_parallel_size: 1
-  moe_layer_recompute: false
   pp: 1
   pp_engine: 1f1b
   recompute_layer: false
@@ -114,12 +99,7 @@ parallelism:
   tp_mode: REDUCE_SCATTER
   tp_recompute_allgather: true
 profiler: null
-s3_upload:
-  remove_after_upload: true
-  s5cmd_concurrency: 5
-  s5cmd_numworkers: 16
-  s5cmd_path: /fsx/loubna/.venv-2-6-cu124/bin/s5cmd
-  upload_s3_path: s3://smollm3/blogpost-ablations/baseline
+s3_upload: null
 tokenizer:
   tokenizer_max_length: 4096
   tokenizer_name_or_path: HuggingFaceTB/SmolLM3-3B
@@ -128,37 +108,37 @@ metrics_logging:
   log_level: 1
   log_detail_interval: 100
 tokens:
-  batch_accumulation_per_replica: 16
+  batch_accumulation_per_replica: 128
   limit_test_batches: 0
   limit_val_batches: 0
   micro_batch_size: 3 # 1.5M tokens
   sequence_length: 4096
-  train_steps: 30000 # 45B tokens
+  train_steps: 10 #
   val_check_interval: 100
-lighteval:
-  slurm_script_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/launch-config"  # Default path for launch scripts
-  logs_path: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/logs"  # Default path for evaluation logs
-  local_checkpoint_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/evals-ckpt"  # Default path for temporary checkpoint storage. Will store under {local_checkpoint_dir}/{run_name}/{step}
-  nanotron_path: "/fsx/loubna/projects_v2/smollm3/nanotron"
-  output_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/results"
-  s3_save_path: "s3://smollm3/blogpost-evals"
-  upload_to_wandb: true
-  wandb_project: smollm3-blog-evals
-  wandb_entity: huggingface
-  parallelism:
-    dp: 8
-    pp: 1
-    tp: 1
-    tp_linear_async_communication: true
-  batch_size: 1  # Optional batch size for evaluation
-  eval_config_override: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_configs/ablations_blog.yaml"  # The evaluation config file to use
-  eval_interval: 1000
-  eval_interval_file: null
-  slurm:
-    gpus_per_node: 8
-    partition: "hopper-prod"
-    hf_cache: "/fsx/loubna/.cache/huggingface"
-    cpus_per_task: 88
-    qos: "normal"
-    time: "01:59:00"
-    reservation: null
+lighteval: null
+  # slurm_script_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/launch-config"  # Default path for launch scripts
+  # logs_path: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/logs"  # Default path for evaluation logs
+  # local_checkpoint_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/evals-ckpt"  # Default path for temporary checkpoint storage. Will store under {local_checkpoint_dir}/{run_name}/{step}
+  # nanotron_path: "/fsx/loubna/projects_v2/smollm3/nanotron"
+  # output_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/results"
+  # s3_save_path: "s3://smollm3/blogpost-evals"
+  # upload_to_wandb: true
+  # wandb_project: smollm3-blog-evals
+  # wandb_entity: huggingface
+  # parallelism:
+  #   dp: 8
+  #   pp: 1
+  #   tp: 1
+  #   tp_linear_async_communication: true
+  # batch_size: 1  # Optional batch size for evaluation
+  # eval_config_override: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_configs/ablations_blog.yaml"  # The evaluation config file to use
+  # eval_interval: 1000
+  # eval_interval_file: null
+  # slurm:
+  #   gpus_per_node: 8
+  #   partition: "hopper-prod"
+  #   hf_cache: "/fsx/loubna/.cache/huggingface"
+  #   cpus_per_task: 88
+  #   qos: "normal"
+  #   time: "01:59:00"
+  #   reservation: null

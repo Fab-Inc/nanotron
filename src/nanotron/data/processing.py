@@ -7,14 +7,17 @@ try:
     from datasets import (
         Dataset,
         DatasetDict,
+        IterableDataset,
         Features,
         Sequence,
         Value,
         concatenate_datasets,
-        load_dataset,
+        # load_dataset,
     )
 except ImportError:
     warnings.warn("Datasets not installed, you'll be unable to use these dataset processing functions.")
+
+from ..custom_streaming_dataset import load_dataset_possibly_azure as load_dataset
 
 # Import SFT processing functions for backward compatibility
 
@@ -66,15 +69,20 @@ def clm_process(
         tokenized_batch = {k: [np.array(tokenized_texts) for tokenized_texts in v] for k, v in tokenized_batch.items()}
         return group_texts(tokenized_batch)
 
-    train_dataset = raw_dataset.map(
-        _tokenize_and_group_texts,
+    ## fix for streaming dataset (can't use num_proc, load_from_cache_file, or desc)
+    map_kwargs = dict(
         input_columns=text_column_name,
         remove_columns=raw_dataset.column_names,
         features=Features({"input_ids": Sequence(feature=Value(dtype="int64"), length=sequence_length + 1)}),
         batched=True,
-        num_proc=dataset_processing_num_proc_per_process,
-        load_from_cache_file=not dataset_overwrite_cache,
-        desc=f"Grouping texts in chunks of {sequence_length+1}",
+    )
+    if not isinstance(raw_dataset, IterableDataset):
+        map_kwargs["num_proc"] = dataset_processing_num_proc_per_process
+        map_kwargs["load_from_cache_file"] = not dataset_overwrite_cache
+        map_kwargs["desc"] = f"Grouping texts in chunks of {sequence_length+1}",
+    train_dataset = raw_dataset.map(
+        _tokenize_and_group_texts,
+        **map_kwargs
     )
     return train_dataset
 

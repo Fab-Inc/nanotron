@@ -21,7 +21,7 @@ dependencies = [
     "safetensors",
     "dacite",
     "tqdm",
-    "datasets>=4",
+    "datasets>=4.5",
     "torchtyping",
 ]
 
@@ -64,6 +64,7 @@ fast-modeling = [
     "ninja",
     "triton",
     "flash-attn>=2.5.0,<2.7.0",
+    # "nv-grouped-gemm@git+https://github.com/fanshiqing/grouped_gemm@main"
 ]
 
 nanosets = [
@@ -81,6 +82,7 @@ s3 = [
 az = [
     "cloudpathlib[azure]",
     "python-dotenv",
+    "adlfs",
 ]
 
 [build-system]

@@ -1,6 +1,6 @@
 checkpoints:
   checkpoint_interval: 1000
-  checkpoints_path: /data/checkpoints
+  checkpoints_path: /data/checkpoints/quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled
   checkpoints_path_is_shared_file_system: false
   load_lr_scheduler: true
   load_optimizer: true
@@ -10,10 +10,16 @@ checkpoints:
 data_stages:
 - data:
     dataset:
-      hf_dataset_or_datasets: az://quratingscoressa/quratingfiltered-noemb/qurater_gemma-3-4b-pt_ds-ours_v2-200000
-      hf_dataset_config_name: null
-      hf_dataset_splits:
-        - "train"
+      # dataset_read_path:
+      # - /data/tmp/quratingfiltered-preprocessed
+      dataset_folder:
+      - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled
+      pad_samples_to_global_batch_size: false
+      return_positions: true
+      token_size_in_bytes: 4
+      tokenizer_name: HuggingFaceTB/SmolLM3-3B
+      use_old_brrr_dataloader: false
+      vocab_size: 128256
     num_loading_workers: 0
     seed: 6
   name: stable
@@ -28,7 +34,7 @@ general:
   step: null
 logging:
   iteration_step_info_interval: 1
-  log_level: debug
+  log_level: info
   log_level_replica: info
 model:
   ddp_bucket_cap_mb: 50
@@ -40,7 +46,7 @@ model:
     _attn_implementation: flash_attention_2
     _fused_rms_norm: true
     _fused_rotary_emb: true
-    _use_doc_masking: false
+    _use_doc_masking: true
     _use_qkv_packed: true
     attention_bias: false
     bos_token_id: 128000
@@ -108,12 +114,12 @@ metrics_logging:
   log_level: 1
   log_detail_interval: 100
 tokens:
-  batch_accumulation_per_replica: 128
+  batch_accumulation_per_replica: 64
   limit_test_batches: 0
   limit_val_batches: 0
-  micro_batch_size: 3 # 1.5M tokens
+  micro_batch_size: 6 # 1.5M tokens
   sequence_length: 4096
-  train_steps: 10 #
+  train_steps: 100 #
   val_check_interval: 100
 lighteval: null
   # slurm_script_dir: "/fsx/loubna/projects_v2/smollm3/nanotron/ablations/eval_results/launch-config"  # Default path for launch scripts

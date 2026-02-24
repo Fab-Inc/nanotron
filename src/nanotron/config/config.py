@@ -157,7 +157,6 @@ class NanosetDatasetsArgs:
     return_positions: Optional[
         bool
     ] = True  # read positions stored in disk by datatrove if eos_token_id is None, else computed on the fly
-
     # Tokenized bytes dataset config
     skip_in_stream: Optional[bool] = False
     pad_samples_to_global_batch_size: Optional[bool] = False

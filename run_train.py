@@ -12,6 +12,7 @@ import time
 from pprint import pformat
 from typing import Dict, Optional, cast
 
+from dotenv import load_dotenv
 import nanotron.distributed as dist
 from nanotron import logging
 from nanotron.config import (
@@ -50,6 +51,8 @@ try:
 except ImportError:
     hf_hub_version = None
     tf_version = None
+
+load_dotenv(override=True)
 
 logger = logging.get_logger(__name__)
 

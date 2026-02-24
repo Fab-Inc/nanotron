@@ -21,7 +21,7 @@ dependencies = [
     "safetensors",
     "dacite",
     "tqdm",
-    "datasets>=4.5",
+    "datasets",
     "torchtyping",
 ]
 
@@ -68,7 +68,7 @@ fast-modeling = [
 ]
 
 nanosets = [
-     "transformers",
+     "transformers<5",
      "datatrove[io,processing]>=0.2.0",
      "numba",
 ]

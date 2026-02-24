@@ -75,7 +75,7 @@ def load_filtered_batch(
         f.write(cloud_path.read_bytes())
         f.seek(0)
         ds = Dataset.from_parquet(f.name, keep_in_memory=True)
-        print(f"Len batch: {subset} - {batchi}: {len(ds)}")
+        # print(f"Len batch: {subset} - {batchi}: {len(ds)}")
 
     if to_pandas:
         ds_df = ds.to_pandas()
@@ -89,7 +89,7 @@ def data_generator_sharder(container, model_string, azure_client_kwargs):
     configs = get_dataset_config_names("airtrain-ai/fineweb-edu-fortified")
     shards = []
     for subset in configs:
-        print(subset)
+        # print(subset)
         n_batches = count_filtered_batches(
             subset, container, model_string, azure_client_kwargs
         )

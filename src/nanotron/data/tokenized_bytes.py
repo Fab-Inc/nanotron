@@ -324,7 +324,8 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
         # Handle S3 paths specially
         matched_files = None
         file_sizes = None
-        if folder_path.startswith("s3://"):
+        ### adding "az://" as another option here, as it is also supported by fsspec with adlfs installed
+        if folder_path.startswith(("s3://", "az://")):
             cache_dir = os.path.expanduser("~/.cache/nanotron/s3_cache")
             os.makedirs(cache_dir, exist_ok=True)
 

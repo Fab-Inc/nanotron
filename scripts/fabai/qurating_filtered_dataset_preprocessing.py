@@ -27,27 +27,38 @@ if __name__ == "__main__":
     }
 
     SEED = 342045735
+    SEED_MERGER = 25374973
 
-    # OUTPUT_FOLDER = Path(__file__).resolve().parent / "data"
-    OUTPUT_FOLDER = (
+    OUTPUT_FOLDER = Path(__file__).resolve().parent / "data"
+
+    # OUTPUT_FOLDER_MERGER = Path(__file__).resolve().parent / "data_merged"
+    OUTPUT_FOLDER_MERGER = (
         "az://quratingfiltered-preprocessed"
         "/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
-        "/tokenized-shuffled"
+        f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}"
     )
     if isinstance(OUTPUT_FOLDER, str) and not OUTPUT_FOLDER.startswith("az://"):
         OUTPUT_FOLDER = Path(OUTPUT_FOLDER)
-    else:
-        OUTPUT_FOLDER = DataFolder(OUTPUT_FOLDER, **azure_kwargs)
+
     if isinstance(OUTPUT_FOLDER, Path):
         OUTPUT_FOLDER.mkdir(exist_ok=True, parents=True)
+    else:
+        OUTPUT_FOLDER = DataFolder(OUTPUT_FOLDER, **azure_kwargs)
 
-    OUTPUT_FOLDER_MERGER = Path(__file__).resolve().parent / "data_merged"
-    OUTPUT_FOLDER_MERGER.mkdir(exist_ok=True, parents=True)
+    if isinstance(OUTPUT_FOLDER_MERGER, str) and not OUTPUT_FOLDER_MERGER.startswith(
+        "az://"
+    ):
+        OUTPUT_FOLDER_MERGER = Path(OUTPUT_FOLDER_MERGER)
+
+    if isinstance(OUTPUT_FOLDER_MERGER, Path):
+        OUTPUT_FOLDER_MERGER.mkdir(exist_ok=True, parents=True)
+    else:
+        OUTPUT_FOLDER_MERGER = DataFolder(OUTPUT_FOLDER_MERGER, **azure_kwargs)
 
     LOCAL_WORKING_DIR = Path(__file__).resolve().parent / "local_working"
     LOCAL_WORKING_DIR.mkdir(exist_ok=True, parents=True)
 
-    DATASET_NAME = f"tokenized-shuffled-{SEED}"
+    DATASET_NAME = f"tokenized-shuffled"
 
     TOKENIZER_NAME = "HuggingFaceTB/SmolLM3-3B"
 
@@ -74,10 +85,10 @@ if __name__ == "__main__":
                     if isinstance(LOCAL_WORKING_DIR, Path)
                     else LOCAL_WORKING_DIR
                 ),
-                save_filename=f"{DATASET_NAME}_tokenized",
+                save_filename=f"{DATASET_NAME}",
                 tokenizer_name_or_path=TOKENIZER_NAME,
                 eos_token=tokenizer.eos_token,
-                shuffle=True,
+                shuffle_documents=True,
                 seed=SEED,
             ),
         ],
@@ -85,18 +96,27 @@ if __name__ == "__main__":
         workers=30,
     )
 
-    dist_executor.run()
+    # dist_executor.run()
 
-    # merge_executor = LocalPipelineExecutor(
-    #     pipeline=[
-    #         DocumentTokenizerMerger(
-    #             input_folder=str(OUTPUT_FOLDER),
-    #             output_folder=str(OUTPUT_FOLDER_MERGER),
-    #             save_filename=f"{DATASET_NAME}",
-    #             seed=8235496,
-    #         )
-    #     ],
-    #     depends=dist_executor,
-    # )
+    merge_executor = LocalPipelineExecutor(
+        pipeline=[
+            DocumentTokenizerMerger(
+                input_folder=(
+                    str(OUTPUT_FOLDER)
+                    if isinstance(OUTPUT_FOLDER, Path)
+                    else OUTPUT_FOLDER
+                ),
+                output_folder=(
+                    str(OUTPUT_FOLDER_MERGER)
+                    if isinstance(OUTPUT_FOLDER_MERGER, Path)
+                    else OUTPUT_FOLDER_MERGER
+                ),
+                save_filename=f"{DATASET_NAME}",
+                seed=SEED_MERGER,
+                max_tokens_per_file=500e6
+            )
+        ],
+        depends=dist_executor,
+    )
 
-    # merge_executor.run()
+    merge_executor.run()

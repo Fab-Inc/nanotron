@@ -32,6 +32,22 @@ if __name__ == "__main__":
     DS = "fineweb-edu"
 
     TARGET = 50_000_000_000
+    FINEWEB_SCHEMA = pa.schema(
+        [
+            ("text", pa.string()),
+            ("id", pa.string()),
+            ("dump", pa.string()),
+            ("url", pa.string()),
+            ("date", pa.string()),
+            ("file_path", pa.string()),
+            ("language", pa.string()),
+            ("language_score", pa.float64()),
+            ("token_count", pa.int64()),
+            ("score", pa.float64()),
+            ("int_score", pa.int64()),
+            ("dataset", pa.string()),
+        ]
+    )
 
     if DS == "dclm":
         # DCLM
@@ -39,18 +55,21 @@ if __name__ == "__main__":
         dataset_path = "mlfoundations/dclm-baseline-1.0-parquet"
         dataset_options = {"split": "train"}
         SZ = 3_468_923_154_406
+        schema = None
     elif DS == "fineweb-edu":
         # Fineweb
         savefold = "fineweb-edu_50BT"
         dataset_path = "HuggingFaceFW/fineweb-edu"
         dataset_options = {"split": "train"}
         SZ = 1_567_210_463_942
+        schema = FINEWEB_SCHEMA
     elif DS == "finemath-3plus":
         # finemath-3plus
         savefold = "finemath_3plus"
         dataset_options = {"split": "train", "name": "finemath-3plus"}
         dataset_path = "HuggingFaceTB/finemath"
         SZ = 34_000_000_000
+        schema = None
 
     else:
         raise NotImplementedError(f"dataset {DS} not supported")
@@ -133,6 +152,7 @@ if __name__ == "__main__":
                 ParquetWriter(
                     output_folder=OUTPUT_FOLDER,
                     output_filename=DATASET_NAME + "-${rank}",
+                    schema=schema,
                 ),
                 # DocumentTokenizer(
                 #     output_folder=output_folder,

@@ -368,7 +368,7 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
                             level=logging.INFO,
                             rank=0,
                         )
-                        from datatrove.utils.dataset import url_to_fs
+                        from fsspec import url_to_fs
 
                         fs_folder, stripped_folder_path = url_to_fs(folder_path)
                         matched_files = (

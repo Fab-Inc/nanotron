@@ -13,7 +13,7 @@ data_stages:
       # dataset_read_path:
       # - /data/tmp/quratingfiltered-preprocessed
       dataset_folder:
-      - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled
+      - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973
       pad_samples_to_global_batch_size: false
       return_positions: true
       token_size_in_bytes: 4

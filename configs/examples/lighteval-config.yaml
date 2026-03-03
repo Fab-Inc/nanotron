@@ -1,0 +1,37 @@
+batch_size: 16
+eval_interval: 5
+generation:
+  n_samples: 1
+  sampler: greedy
+  seed: 42
+  temperature: 0.0
+  top_k: 0
+  top_p: 1.0
+  use_cache: true
+local_checkpoint_dir: /scratch
+logging:
+  local_output_path: /home/ogarrod/projects/nanotron/eval_results
+logs_path: /home/ogarrod/projects/nanotron/eval_results/logs
+nanotron_path: ./
+parallelism:
+  context_parallel_size: 1
+  dp: 1
+  expert_parallel_size: 1
+  pp: 1
+  recompute_layer: false
+  tp: 1
+  tp_linear_async_communication: false
+  tp_recompute_allgather: true
+slurm:
+  cpus_per_task: 1
+  gpus_per_node: 1
+  hf_cache: /home/ogarrod/.cache/huggingface
+  partition: debug
+  qos: low
+  reservation: smollm
+  time: '24:00:00'
+slurm_script_dir: /home/ogarrod/projects/nanotron/eval_results/launch-config
+tasks:
+  dataset_loading_processes: 8
+  tasks: lighteval|agieval:aqua-rat|5|0
+upload_to_wandb: false

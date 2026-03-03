@@ -23,6 +23,7 @@ dependencies = [
     "tqdm",
     "datasets",
     "torchtyping",
+    "lighteval==0.11.*",
 ]
 
 [tool.ruff]

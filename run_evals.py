@@ -4,7 +4,7 @@ from typing import Optional
 
 from nanotron.config import ParallelismArgs
 
-from lighteval.config.lighteval_config import (
+from nanotron.config.lighteval_config import (
     GenerationArgs,
     LightEvalConfig,
     LightEvalLoggingArgs,

@@ -1239,7 +1239,7 @@ class DistributedTrainer:
                     or self.iteration_step % self.config.lighteval.eval_interval == 0
                 ):
                     checkpoint_path = Path(self.config.checkpoints.checkpoints_path) / f"{self.config.general.step}"
-                    self.lighteval_runner.eval_single_checkpoint(checkpoint_path)
+                    self.lighteval_runner.eval_single_checkpoint([{"destination": str(checkpoint_path / "config.yaml")}])
 
     def save_checkpoint(self) -> Path:
         self.pre_save_checkpoint()

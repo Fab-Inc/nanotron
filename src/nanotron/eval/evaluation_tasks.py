@@ -1,7 +1,7 @@
 from functools import partial
 
 from lighteval.metrics.dynamic_metrics import (
-    loglikelihood_acc_metric,
+    LogLikelihoodAccMetric,
 )
 from lighteval.metrics.normalizations import LogProbCharNorm, LogProbPMINorm, LogProbTokenNorm
 from lighteval.tasks.default_prompts import LETTER_INDICES
@@ -49,9 +49,9 @@ arc_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
-                loglikelihood_acc_metric(normalization=LogProbPMINorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbPMINorm()),
             ],
         ),
     )
@@ -88,8 +88,8 @@ hellaswag_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
             ],
         ),
         trust_dataset=True,
@@ -118,9 +118,9 @@ commonsense_qa_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
-                loglikelihood_acc_metric(normalization=LogProbPMINorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbPMINorm()),
             ],
         ),
     )
@@ -152,8 +152,8 @@ openbook_qa_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
             ],
         ),
     )
@@ -178,9 +178,9 @@ winogrande_tasks = [
         trust_dataset=True,
         hf_revision="85ac5b5a3b7a930e22d590176e39460400d19e41",
         metric=[
-            loglikelihood_acc_metric(normalization=None),
-            loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-            loglikelihood_acc_metric(normalization=LogProbCharNorm()),
+            LogLikelihoodAccMetric(normalization=None),
+            LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+            LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
         ],
     )
     for formulation in [
@@ -212,8 +212,8 @@ piqa_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
             ],
         ),
     )
@@ -309,9 +309,9 @@ mmlu_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
-                loglikelihood_acc_metric(normalization=LogProbPMINorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbPMINorm()),
             ],
         ),
     )
@@ -347,9 +347,9 @@ mmlu_pro_tasks = [
         metric=get_metrics_for_formulation(
             formulation,
             [
-                loglikelihood_acc_metric(normalization=LogProbTokenNorm()),
-                loglikelihood_acc_metric(normalization=LogProbCharNorm()),
-                loglikelihood_acc_metric(normalization=LogProbPMINorm()),
+                LogLikelihoodAccMetric(normalization=LogProbTokenNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbCharNorm()),
+                LogLikelihoodAccMetric(normalization=LogProbPMINorm()),
             ],
         ),
     )

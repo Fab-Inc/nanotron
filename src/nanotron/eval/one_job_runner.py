@@ -131,7 +131,7 @@ def run_slurm_one_job(
 #SBATCH --nodes={nodes}
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task={slurm_config.cpus_per_task}
-#SBATCH --gpus={slurm_config.gpus_per_node}
+#SBATCH --gres=gpu:{slurm_config.gpus_per_node}
 #SBATCH --exclusive
 #SBATCH --qos={slurm_config.qos}
 #SBATCH --time={slurm_config.time}

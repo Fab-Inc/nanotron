@@ -14,7 +14,7 @@ classifiers = [
     "Topic :: Software Development"
 ]
 dependencies = [
-    "torch>=1.13.1",
+    "torch==2.5.1",
     "pyyaml",
     "numpy",
     "packaging",
@@ -23,7 +23,8 @@ dependencies = [
     "tqdm",
     "datasets",
     "torchtyping",
-    "lighteval==0.11.*",
+    "lighteval",
+    "pillow",
 ]
 
 [tool.ruff]
@@ -33,7 +34,7 @@ select = ["C","E","F","I","W"]
 ignore-init-module-imports = true
 
 [tool.uv.extra-build-dependencies]
-flash-attn = ["wheel", "torch", "psutil"]
+flash-attn = ["setuptools", "wheel", "torch", "psutil"]
 
 [tool.uv]
 no-build-isolation-package = ['flash-attn']
@@ -45,6 +46,9 @@ explicit = true
 
 [tool.uv.sources]
 torch = {index = "pytorch"}
+triton = {index = "pytorch"}
+lighteval = { git = "https://github.com/Fab-Inc/lighteval.git", rev = "develop"}
+datatrove = { git = "https://github.com/huggingface/datatrove.git", rev = "7939834eb71173181c658798d386c477a01342af"}
 
 [dependency-groups]
 dev = [
@@ -63,14 +67,15 @@ test = [
 
 fast-modeling = [
     "ninja",
-    "triton",
+    "triton==3.3.*",
+    "setuptools",
     "flash-attn>=2.5.0,<2.7.0",
     # "nv-grouped-gemm@git+https://github.com/fanshiqing/grouped_gemm@main"
 ]
 
 nanosets = [
      "transformers<5",
-     "datatrove[io,processing]@git+https://github.com/huggingface/datatrove.git@7939834eb71173181c658798d386c477a01342af",
+     "datatrove[io,processing]",
      "numba",
 ]
 

@@ -211,5 +211,5 @@ if __name__ == "__main__":
     nanotron(
         checkpoint_config_path=args.checkpoint_config_path,
         lighteval_config_path=lighteval_config_path,
-        cache_dir=args.cache_dir,
+        # cache_dir=args.cache_dir,
     )

@@ -26,12 +26,23 @@ sudo cp scripts/fabai/gres.conf /etc/slurm/gres.conf
 sudo mkdir -p /var/lib/slurm-llnl/slurmd
 sudo mkdir -p /var/lib/slurm-llnl/slurmctld
 sudo chown -R slurm:slurm /var/lib/slurm-llnl/
+
 sudo systemctl enable slurmctld slurmd
 sudo systemctl restart slurmctld slurmd
 
+# useful commands
+scontrol show node localhost
+squeue
+
+# manually launch slurmctld/slurmd with verbosity
+slurmctld -Dvvvv
+slurmd -Dvvvv
+
+
 sudo scontrol delete ReservationName=smollm
-sudo scontrol create reservation ReservationName=smollm StartTime=now Duration=infinite Nodes=all Users=ogarrod
+sudo scontrol create reservation ReservationName=smollm StartTime=now Duration=infinite Nodes=all Users=ubuntu
 scontrol show reservation
+
 ```
 
 

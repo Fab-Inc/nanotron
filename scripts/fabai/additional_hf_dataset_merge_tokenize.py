@@ -29,7 +29,7 @@ if __name__ == "__main__":
         "account_name": "quratingscoressa",
         "account_key": os.getenv("QURATING_SCORES_AZURE_STORAGE_KEY"),
     }
-    DS = "finemath-3plus"
+    DS = "dclm"
 
     TARGET = 50_000_000_000
     FINEWEB_SCHEMA = pa.schema(
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     OUTPUT_FOLDER_MERGER = (
         "az://additional-datasets-preprocessed"
         "/tokenized-merged"
+        "/outputs"
         f"/{savefold}"
         f"/sampler_seed-{SEED_SAMPLER}"
         f"/tokenized-shuffled_seed-{SEED}_merge-seed_{SEED_MERGER}"
@@ -117,21 +118,23 @@ if __name__ == "__main__":
     LOG_BASE_DIR = (
         "az://additional-datasets-preprocessed"
         "/tokenized-merged"
-        f"/{savefold}"
         "/logs"
+        f"/{savefold}"
+        f"/sampler_seed-{SEED_SAMPLER}"
+        f"/tokenized-shuffled_seed-{SEED}_merge-seed_{SEED_MERGER}"
     )
     if isinstance(LOG_BASE_DIR, str) and not LOG_BASE_DIR.startswith("az://"):
         LOG_BASE_DIR = Path(LOG_BASE_DIR)
 
     if isinstance(LOG_BASE_DIR, Path):
-        logging_dir = LOG_BASE_DIR / savefold / "tokenize-shuffle"
+        logging_dir = LOG_BASE_DIR
         logging_dir.mkdir(exist_ok=True, parents=True)
-        logging_dir_merger = LOG_BASE_DIR / savefold / "merger"
+        logging_dir_merger = LOG_BASE_DIR / "merger"
         logging_dir_merger.mkdir(exist_ok=True, parents=True)
     else:
-        logging_dir = f"{LOG_BASE_DIR}/{savefold}/tokenize-shuffle"
+        logging_dir = f"{LOG_BASE_DIR}"
         logging_dir = DataFolder(logging_dir, **azure_kwargs)
-        logging_dir_merger = f"{LOG_BASE_DIR}/{savefold}/merger"
+        logging_dir_merger = f"{LOG_BASE_DIR}/merger"
         logging_dir_merger = DataFolder(logging_dir_merger, **azure_kwargs)
 
     DATASET_NAME = f"tokenized-shuffled-{SEED}"
@@ -157,7 +160,7 @@ if __name__ == "__main__":
         ],
         logging_dir=logging_dir,
         tasks=1000,
-        workers=20,
+        workers=30,
     )
 
     merge_executor = LocalPipelineExecutor(
@@ -174,7 +177,7 @@ if __name__ == "__main__":
                 max_tokens_per_file=500e6,
             )
         ],
-        logging_dir=logging_dir,
+        logging_dir=logging_dir_merger,
         depends=dist_executor,
         tasks=1,
     )

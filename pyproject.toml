@@ -14,7 +14,7 @@ classifiers = [
     "Topic :: Software Development"
 ]
 dependencies = [
-    "torch==2.5.1",
+    "torch>=2.6.0",
     "pyyaml",
     "numpy",
     "packaging",
@@ -47,7 +47,7 @@ explicit = true
 [tool.uv.sources]
 torch = {index = "pytorch"}
 triton = {index = "pytorch"}
-lighteval = { git = "https://github.com/Fab-Inc/lighteval.git", rev = "develop"}
+lighteval = { git = "https://github.com/Fab-Inc/lighteval.git", rev = "develop-earlyversion"}
 datatrove = { git = "https://github.com/huggingface/datatrove.git", rev = "7939834eb71173181c658798d386c477a01342af"}
 
 [dependency-groups]
@@ -67,7 +67,7 @@ test = [
 
 fast-modeling = [
     "ninja",
-    "triton==3.3.*",
+    "triton==3.*",
     "setuptools",
     "flash-attn>=2.5.0,<2.7.0",
     # "nv-grouped-gemm@git+https://github.com/fanshiqing/grouped_gemm@main"

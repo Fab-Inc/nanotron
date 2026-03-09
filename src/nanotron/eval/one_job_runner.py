@@ -136,6 +136,7 @@ def run_slurm_one_job(
 #SBATCH --qos={slurm_config.qos}
 #SBATCH --time={slurm_config.time}
 #SBATCH --output={eval_logs_path}/%j-{timestamp}.out
+#SBATCH --error={eval_logs_path}/%j-{timestamp}.err
 #SBATCH --requeue"""
 
     if slurm_config.reservation:
@@ -295,6 +296,7 @@ echo "END TIME: $(date)"
         "PATH": os.environ["PATH"],
         "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
         "HOME": os.path.expanduser("~"),
+        "HUGGING_FACE_HUB_TOKEN": os.environ["HUGGING_FACE_HUB_TOKEN"],
     }
 
     try:

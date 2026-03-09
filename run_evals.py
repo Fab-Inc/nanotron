@@ -2,6 +2,8 @@ import argparse
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
+
 from nanotron.config import ParallelismArgs
 
 from nanotron.config.lighteval_config import (
@@ -12,6 +14,7 @@ from nanotron.config.lighteval_config import (
 )
 from lighteval.main_nanotron import nanotron
 
+load_dotenv(override=True)
 
 def create_lighteval_config(
     output_dir: str = "./eval_results",
@@ -211,5 +214,5 @@ if __name__ == "__main__":
     nanotron(
         checkpoint_config_path=args.checkpoint_config_path,
         lighteval_config_path=lighteval_config_path,
-        # cache_dir=args.cache_dir,
+        cache_dir=args.cache_dir,
     )

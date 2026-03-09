@@ -114,10 +114,10 @@ metrics_logging:
   log_level: 1
   log_detail_interval: 100
 tokens:
-  batch_accumulation_per_replica: 128
+  batch_accumulation_per_replica: 384
   limit_test_batches: 0
   limit_val_batches: 0
-  micro_batch_size: 3 # 1.5M tokens
+  micro_batch_size: 1 # 1.5M tokens
   sequence_length: 4096
   train_steps: 100 #
   val_check_interval: 3
@@ -150,13 +150,13 @@ lighteval:
   slurm:
     cpus_per_task: 1
     gpus_per_node: 1
-    hf_cache: /home/ubuntu/.cache/huggingface
+    hf_cache: ~/.cache/huggingface
     partition: debug
     qos: low
-    reservation: smollm
-    time: '00:00:00'
+    reservation: null
+    time: '24:00:00'
   slurm_script_dir: ./eval_results/launch-config
   tasks:
     dataset_loading_processes: 8
-    tasks: lighteval|agieval:aqua-rat|5
+    tasks: lighteval|agieval:aqua-rat|5|0
   upload_to_wandb: false

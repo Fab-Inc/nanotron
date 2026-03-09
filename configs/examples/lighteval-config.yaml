@@ -1,5 +1,6 @@
+eval_config_override: ./configs/examples/lighteval-config.yaml
 batch_size: 16
-eval_interval: 5
+eval_interval: 3
 generation:
   n_samples: 1
   sampler: greedy
@@ -8,10 +9,10 @@ generation:
   top_k: 0
   top_p: 1.0
   use_cache: true
-local_checkpoint_dir: /scratch
+local_checkpoint_dir: ./smol-playbook-checkpoints
 logging:
-  local_output_path: /home/ogarrod/projects/nanotron/eval_results
-logs_path: /home/ogarrod/projects/nanotron/eval_results/logs
+  local_output_path: ./eval_results
+logs_path: ./eval_results/logs
 nanotron_path: ./
 parallelism:
   context_parallel_size: 1
@@ -25,12 +26,12 @@ parallelism:
 slurm:
   cpus_per_task: 1
   gpus_per_node: 1
-  hf_cache: /home/ogarrod/.cache/huggingface
+  hf_cache: ~/.cache/huggingface
   partition: debug
   qos: low
-  reservation: smollm
+  reservation: null
   time: '24:00:00'
-slurm_script_dir: /home/ogarrod/projects/nanotron/eval_results/launch-config
+slurm_script_dir: ./eval_results/launch-config
 tasks:
   dataset_loading_processes: 8
   tasks: lighteval|agieval:aqua-rat|5|0

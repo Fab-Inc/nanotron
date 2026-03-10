@@ -29,7 +29,7 @@ if __name__ == "__main__":
         "account_name": "quratingscoressa",
         "account_key": os.getenv("QURATING_SCORES_AZURE_STORAGE_KEY"),
     }
-    DS = "dclm"
+    DS = "finemath-3plus"
 
     TARGET = 50_000_000_000
     FINEWEB_SCHEMA = pa.schema(
@@ -159,8 +159,8 @@ if __name__ == "__main__":
             ),
         ],
         logging_dir=logging_dir,
-        tasks=1000,
-        workers=30,
+        tasks=500,
+        workers=20,
     )
 
     merge_executor = LocalPipelineExecutor(

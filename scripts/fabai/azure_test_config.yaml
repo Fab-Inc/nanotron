@@ -13,7 +13,11 @@ data_stages:
       # dataset_read_path:
       # - /data/tmp/quratingfiltered-preprocessed
       dataset_folder:
-      - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973
+        - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973
+        - az://additional-datasets-preprocessed/tokenized-merged/outputs/dclm_50BT/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
+      dataset_weights:
+        - 0.5
+        - 0.5
       pad_samples_to_global_batch_size: false
       return_positions: true
       token_size_in_bytes: 4
@@ -119,7 +123,7 @@ tokens:
   limit_val_batches: 0
   micro_batch_size: 1 # 1.5M tokens
   sequence_length: 4096
-  train_steps: 100 #
+  train_steps: 200 #
   val_check_interval: 3
 lighteval:
   eval_config_override: ./configs/examples/lighteval-config.yaml
@@ -157,6 +161,7 @@ lighteval:
     time: '24:00:00'
   slurm_script_dir: ./eval_results/launch-config
   tasks:
+    custom_tasks: nanotron.eval.fabai.pedagogy_cdpk
     dataset_loading_processes: 8
-    tasks: lighteval|agieval:aqua-rat|5|0
+    tasks: custom|pedagogy_cdpk_cloze|0|0
   upload_to_wandb: false

@@ -1,4 +1,3 @@
-eval_config_override: ./configs/examples/lighteval-config.yaml
 batch_size: 16
 eval_interval: 10
 generation:
@@ -9,10 +8,10 @@ generation:
   top_k: 0
   top_p: 1.0
   use_cache: true
-local_checkpoint_dir: ./checkpoints/smol-playbook-checkpoints
+local_checkpoint_dir: ./checkpoints/smollm3-checkpoint-nano
 logging:
-  local_output_path: ./eval_results
-logs_path: ./eval_results/logs
+  local_output_path: ./eval_results_smollm3
+logs_path: ./eval_results_smollm3/logs
 nanotron_path: ./
 parallelism:
   context_parallel_size: 1
@@ -34,5 +33,7 @@ slurm:
 slurm_script_dir: ./eval_results/launch-config
 tasks:
   dataset_loading_processes: 8
-  tasks: leaderboard|hellaswag|0|0,leaderboard|winogrande|0|0
+  # tasks: leaderboard|hellaswag|0|0
+  # tasks: leaderboard|winogrande|0|0
+  tasks: helm|commonsenseqa|0|0
 upload_to_wandb: false

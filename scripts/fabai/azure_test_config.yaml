@@ -1,6 +1,6 @@
 checkpoints:
-  checkpoint_interval: 3
-  checkpoints_path: smol-playbook-checkpoints/qurater_gemma-3-4b-pt_ds-ours_v2-200000
+  checkpoint_interval: 50
+  checkpoints_path: checkpoints/smol-playbook-checkpoints/qurater_gemma-3-4b-pt_ds-ours_v2-200000
   checkpoints_path_is_shared_file_system: false
   load_lr_scheduler: true
   load_optimizer: true
@@ -82,10 +82,16 @@ optimizer:
   clip_grad: 1.0
   learning_rate_scheduler:
     learning_rate: 0.0005
-    lr_decay_starting_step: 2000
-    lr_decay_steps: 28000
+    # lr_decay_starting_step: 2000
+    # lr_decay_steps: 28000
+    # lr_decay_style: cosine
+    # lr_warmup_steps: 2000
+    # lr_warmup_style: linear
+    # min_decay_lr: 5.0e-05
+    lr_decay_starting_step: 150
+    lr_decay_steps: 1050
     lr_decay_style: cosine
-    lr_warmup_steps: 2000
+    lr_warmup_steps: 150
     lr_warmup_style: linear
     min_decay_lr: 5.0e-05
   optimizer_factory:
@@ -123,12 +129,12 @@ tokens:
   limit_val_batches: 0
   micro_batch_size: 1 # 1.5M tokens
   sequence_length: 4096
-  train_steps: 200 #
-  val_check_interval: 3
+  train_steps: 1200 #
+  val_check_interval: 10
 lighteval:
   eval_config_override: ./configs/examples/lighteval-config.yaml
   batch_size: 16
-  eval_interval: 3
+  eval_interval: 10
   generation:
     n_samples: 1
     sampler: greedy
@@ -137,7 +143,7 @@ lighteval:
     top_k: 0
     top_p: 1.0
     use_cache: true
-  local_checkpoint_dir: ./smol-playbook-checkpoints
+  local_checkpoint_dir: .checkpoints/smol-playbook-checkpoints
   logging:
     local_output_path: ./eval_results
   logs_path: ./eval_results/logs
@@ -163,5 +169,5 @@ lighteval:
   tasks:
     custom_tasks: nanotron.eval.fabai.pedagogy_cdpk
     dataset_loading_processes: 8
-    tasks: custom|pedagogy_cdpk_cloze|0|0
+    tasks: leaderboard|hellaswag|0|0,leaderboard|winogrande|0|0
   upload_to_wandb: false

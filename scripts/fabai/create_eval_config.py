@@ -1,19 +1,18 @@
-from pathlib import Path
 import argparse
 import os
-from typing import Optional
 from dataclasses import asdict
+from pathlib import Path
+from typing import Optional
 
 from nanotron.config import ParallelismArgs
-from nanotron.generation.sampler import SamplerType
 from nanotron.config.lighteval_config import (
     GenerationArgs,
     LightEvalConfig,
     LightEvalLoggingArgs,
-    LightEvalTasksArgs,
     LightEvalSlurm,
+    LightEvalTasksArgs,
 )
-from lighteval.main_nanotron import nanotron
+from nanotron.generation.sampler import SamplerType
 
 
 def create_lighteval_config(

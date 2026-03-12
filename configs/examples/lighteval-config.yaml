@@ -1,6 +1,6 @@
 eval_config_override: ./configs/examples/lighteval-config.yaml
 batch_size: 16
-eval_interval: 10
+eval_interval: 1000
 generation:
   n_samples: 1
   sampler: greedy
@@ -27,7 +27,7 @@ slurm:
   cpus_per_task: 1
   gpus_per_node: 1
   hf_cache: ~/.cache/huggingface
-  partition: debug
+  partition: eval
   qos: low
   reservation: null
   time: '24:00:00'

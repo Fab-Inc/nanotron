@@ -26,7 +26,7 @@ slurm:
   cpus_per_task: 1
   gpus_per_node: 1
   hf_cache: ~/.cache/huggingface
-  partition: debug
+  partition: lheval
   qos: low
   reservation: null
   time: '24:00:00'

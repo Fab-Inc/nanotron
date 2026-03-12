@@ -33,6 +33,8 @@ sudo systemctl restart slurmctld slurmd
 # useful commands
 scontrol show node localhost
 squeue
+# kill all jobs
+scancel -u <username>
 
 # manually launch slurmctld/slurmd with verbosity
 slurmctld -Dvvvv

@@ -30,9 +30,9 @@ for step in steps:
 res_df_list = []
 for eval, res_list in res_list_dict.items():
     df = pd.DataFrame(res_list, index=steps)
-    # if "acc_norm" in df.columns:
-    #     df["acc"] = df["acc_norm"]
-    #     df["acc_stderr"] = df["acc_norm_stderr"]
+    if "acc_norm" in df.columns:
+        df["acc"] = df["acc_norm"]
+        df["acc_stderr"] = df["acc_norm_stderr"]
     df.columns = pd.MultiIndex.from_product([[eval], df.columns])
     res_df_list.append(df)
 res_df = pd.concat(res_df_list, axis=1)

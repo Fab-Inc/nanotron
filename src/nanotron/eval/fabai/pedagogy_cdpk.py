@@ -108,10 +108,11 @@ def _parse_cdpk_row(line: dict[str, Any]) -> tuple[str, list[str], int] | None:
 
 
 def _build_query(question: str, choices: list[str]) -> str:
-    prompt = "The following is a pedagogy multiple-choice question.\n\n"
-    prompt += f"Question: {question}\n"
-    prompt += "".join(f"{label}. {choice}\n" for label, choice in zip(CHOICE_KEYS, choices))
-    prompt += "Answer:"
+    # prompt = "The following is a pedagogy multiple-choice question.\n\n"
+    # prompt += f"Question: {question}\n"
+    # prompt += "".join(f"{label}. {choice}\n" for label, choice in zip(CHOICE_KEYS, choices))
+    # prompt += "Answer:"
+    prompt = question
     return prompt
 
 
@@ -161,9 +162,10 @@ def pedagogy_cdpk_cloze_prompt(line: dict[str, Any], task_name: str | None = Non
     return Doc(
         task_name=task_name or "pedagogy_cdpk_cloze",
         query=_build_query_with_answer_space(question, choices),
-        choices=list(CHOICE_KEYS[: len(choices)]),
+        # choices=list(CHOICE_KEYS[: len(choices)]),
+        choices=choices,
         gold_index=gold_index,
-        instruction="The following is a pedagogy multiple-choice question.\n\n",
+        # instruction="The following is a pedagogy multiple-choice question.\n\n",
     )
 
 
@@ -193,7 +195,7 @@ pedagogy_cdpk_cloze = LightevalTaskConfig(
     few_shots_split=None,
     few_shots_select=None,
     generation_size=1,
-    metric=[Metrics.loglikelihood_acc],
+    metric=[Metrics.loglikelihood_acc, Metrics.loglikelihood_acc_norm],
     stop_sequence=["\n"],
     hf_filter=pedagogy_cdpk_filter,
     version=0,

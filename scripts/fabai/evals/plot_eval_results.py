@@ -1,13 +1,13 @@
 # %%
-from pathlib import Path
 import json
 from collections import defaultdict
+from pathlib import Path
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 
 # %%
 results_dir = ROOT / "eval_results" / "results" / "baseline"
@@ -19,9 +19,9 @@ steps = sorted(int(rf.parent.name) for rf in results_files)
 res_list_dict = defaultdict(list)
 for step in steps:
     step_file_dir = results_dir / f"{step}"
-    step_file = list(step_file_dir.glob("*.json"))
-    assert len(step_file) == 1
-    step_file = step_file[0]
+    step_file = sorted(step_file_dir.glob("*.json"))
+    assert len(step_file) >= 1
+    step_file = step_file[-1]
     with open(step_file, "r") as f:
         step_res = json.load(f)
     for eval, res in step_res["results"].items():
@@ -42,4 +42,4 @@ fig, ax = plt.subplots(figsize=(10, 8))
 
 sns.lineplot(res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1), ax=ax)
 
-fig.savefig(ROOT / "eval_results" / "test_res.png", dpi=300)
+# fig.savefig(ROOT / "eval_results" / "test_res.png", dpi=300)

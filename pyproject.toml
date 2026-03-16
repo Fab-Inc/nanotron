@@ -21,7 +21,7 @@ dependencies = [
     "safetensors",
     "dacite",
     "tqdm",
-    "datasets",
+    "datasets<=4.5.0",
     "torchtyping",
     "lighteval",
     "pillow",
@@ -83,6 +83,7 @@ nanosets = [
 
 s3 = [
     "boto3",
+    "botocore[crt]",
     "s3fs",
     "s5cmd",
 ]

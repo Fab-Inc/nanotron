@@ -51,6 +51,7 @@ torch = {index = "pytorch"}
 triton = {index = "pytorch"}
 lighteval = { git = "https://github.com/Fab-Inc/lighteval.git", rev = "develop-earlyversion"}
 datatrove = { git = "https://github.com/huggingface/datatrove.git", rev = "7939834eb71173181c658798d386c477a01342af"}
+fab-qurating = { git = "https://github.com/Fab-Inc/fab-qurating.git", rev = "do-adapt-oli-run-minimal-data" }
 
 [dependency-groups]
 dev = [
@@ -92,6 +93,7 @@ az = [
     "cloudpathlib[azure]",
     "python-dotenv",
     "adlfs",
+    "fab-qurating",
 ]
 
 [build-system]

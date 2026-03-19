@@ -12,6 +12,7 @@ from datatrove.pipeline.writers import ParquetWriter
 from dotenv import load_dotenv
 from transformers import AutoTokenizer
 
+from additional_hf_dataset_preprocessing import SoftwareHeritageDownloader
 # %%
 # pqr = ParquetReader(
 #     data_folder=df,
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         "account_name": "quratingscoressa",
         "account_key": os.getenv("QURATING_SCORES_AZURE_STORAGE_KEY"),
     }
-    DS = "finemath-3plus"
+    DS = "stack-edu-python"
 
     TARGET = 50_000_000_000
     FINEWEB_SCHEMA = pa.schema(
@@ -48,29 +49,62 @@ if __name__ == "__main__":
             ("dataset", pa.string()),
         ]
     )
+    STACK_EDU_SCHEMA = pa.schema(
+        [
+            ("text", pa.string()),
+            ("language", pa.string()),
+            ("repo_name", pa.string()),
+            ("path", pa.string()),
+            ("src_encoding", pa.string()),
+            ("length_bytes", pa.string()),
+            ("score", pa.float64()),
+            ("int_score", pa.int64()),
+            ("detected_licences", pa.list_(pa.string())),
+            ("license_type", pa.string()),
+        ]
+    )
 
-    if DS == "dclm":
+    if DS == "stack-edu-python":
+        # stack-edu-python
+        savefold = "stack-edu-python"
+        dataset_path = "HuggingFaceTB/stack-edu"
+        dataset_options = {"split": "train", "name": "Python"}
+        reader_options = {
+            "text_key": "blob_id",
+            "id_key": "blob_id",
+            "streaming": False,
+        }
+        SZ = 21_800_000_000
+        schema = STACK_EDU_SCHEMA
+        extra_pipeline_stage = SoftwareHeritageDownloader()
+    elif DS == "dclm":
         # DCLM
         savefold = "dclm_50BT"
         dataset_path = "mlfoundations/dclm-baseline-1.0-parquet"
         dataset_options = {"split": "train"}
+        reader_options = {"streaming": True}
+        text_key = "text"
         SZ = 3_468_923_154_406
         schema = None
+        extra_pipeline_stage = None
     elif DS == "fineweb-edu":
         # Fineweb
         savefold = "fineweb-edu_50BT"
         dataset_path = "HuggingFaceFW/fineweb-edu"
         dataset_options = {"split": "train"}
+        reader_options = {"streaming": True}
         SZ = 1_567_210_463_942
         schema = FINEWEB_SCHEMA
+        extra_pipeline_stage = None
     elif DS == "finemath-3plus":
         # finemath-3plus
         savefold = "finemath_3plus"
         dataset_options = {"split": "train", "name": "finemath-3plus"}
+        reader_options = {"streaming": True}
         dataset_path = "HuggingFaceTB/finemath"
         SZ = 34_000_000_000
         schema = None
-
+        extra_pipeline_stage = None
     else:
         raise NotImplementedError(f"dataset {DS} not supported")
 

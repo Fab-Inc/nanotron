@@ -311,6 +311,7 @@ class DistributedTrainer:
                 s5cmd_concurrency=self.config.s3_upload.s5cmd_concurrency,
                 s5cmd_path=self.config.s3_upload.s5cmd_path,
                 dummy=dummy,
+                s3_region=self.config.s3_upload.s3_region,
             )
         else:
             self.s3_mover = None

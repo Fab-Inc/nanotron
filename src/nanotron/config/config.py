@@ -135,6 +135,7 @@ class S3UploadArgs:
     s5cmd_numworkers: Optional[int]
     s5cmd_concurrency: Optional[int]
     s5cmd_path: Optional[xPath]
+    s3_region: str = "us-east-1"
 
     def __post_init__(self):
         if isinstance(self.upload_s3_path, str):

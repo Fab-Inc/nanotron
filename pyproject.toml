@@ -85,7 +85,7 @@ nanosets = [
 s3 = [
     "boto3",
     "botocore[crt]",
-    "s3fs",
+    "s3fs>=2021",
     "s5cmd",
 ]
 

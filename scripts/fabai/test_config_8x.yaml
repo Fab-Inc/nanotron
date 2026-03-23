@@ -132,7 +132,7 @@ tokens:
   train_steps: 30000 #
   val_check_interval: 10
 lighteval:
-  eval_config_override: ./configs/examples/lighteval-config.yaml
+  eval_config_override: ./configs/fabai/lighteval/lighteval-config.yaml
   batch_size: 16
   eval_interval: 1000
   generation:

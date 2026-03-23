@@ -11,7 +11,10 @@ ROOT = Path(__file__).resolve().parents[3]
 load_dotenv(override=True)
 
 # %%
-nanotron_config_file = ROOT / "scripts" / "fabai" / "azure_test_config.yaml"
+nanotron_config_file = ROOT / "configs" / "fabai" / "base-run-100-no-evals.yaml"
+nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
+
+lighteval_config_file = ROOT / "configs" / "fabai" / "lighteval" / "lighteval-config.yaml"
 nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
 
 # %%

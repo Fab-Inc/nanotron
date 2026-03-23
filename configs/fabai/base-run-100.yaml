@@ -1,5 +1,5 @@
 checkpoints:
-  checkpoint_interval: 50
+  checkpoint_interval: 10
   checkpoints_path: checkpoints/smol-playbook-checkpoints/qurater_gemma-3-4b-pt_ds-ours_v2-200000
   checkpoints_path_is_shared_file_system: false
   load_lr_scheduler: true
@@ -13,11 +13,16 @@ data_stages:
       # dataset_read_path:
       # - /data/tmp/quratingfiltered-preprocessed
       dataset_folder:
+        # fwe filtered
         - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973
-        - az://additional-datasets-preprocessed/tokenized-merged/outputs/dclm_50BT/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
+        # finemath
+        - az://additional-datasets-preprocessed/tokenized-merged/outputs/finemath_3plus/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
+        # stack-edu-python
+        - az://additional-datasets-preprocessed/tokenized-merged/outputs/stack-edu-python/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
       dataset_weights:
-        - 0.5
-        - 0.5
+        - 0.7
+        - 0.1
+        - 0.2
       pad_samples_to_global_batch_size: false
       return_positions: true
       token_size_in_bytes: 4
@@ -32,8 +37,8 @@ general:
   benchmark_csv_path: null
   consumed_train_samples: null
   ignore_sanity_checks: true
-  project: azure-test
-  run: baseline
+  project: qurating-smol-playbook
+  run: base-run-100
   seed: 6
   step: null
 logging:
@@ -50,7 +55,7 @@ model:
     _attn_implementation: flash_attention_2
     _fused_rms_norm: true
     _fused_rotary_emb: true
-    _use_doc_masking: true
+    _use_doc_masking: false
     _use_qkv_packed: true
     attention_bias: false
     bos_token_id: 128000
@@ -115,7 +120,13 @@ parallelism:
   tp_mode: REDUCE_SCATTER
   tp_recompute_allgather: true
 profiler: null
-s3_upload: null
+s3_upload:
+  remove_after_upload: true
+  s5cmd_concurrency: 5
+  s5cmd_numworkers: 16
+  s5cmd_path: .venv/bin/s5cmd
+  upload_s3_path: s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-100
+  s3_region: eu-west-2-an
 tokenizer:
   tokenizer_max_length: 4096
   tokenizer_name_or_path: HuggingFaceTB/SmolLM3-3B
@@ -124,12 +135,12 @@ metrics_logging:
   log_level: 1
   log_detail_interval: 100
 tokens:
-  batch_accumulation_per_replica: 384
+  batch_accumulation_per_replica: 128
   limit_test_batches: 0
   limit_val_batches: 0
-  micro_batch_size: 1 # 1.5M tokens
+  micro_batch_size: 3 # 1.5M tokens
   sequence_length: 4096
-  train_steps: 1200 #
+  train_steps: 100 #
   val_check_interval: 10
 lighteval:
   eval_config_override: ./configs/fabai/lighteval/lighteval-config.yaml

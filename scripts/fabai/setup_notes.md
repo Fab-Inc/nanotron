@@ -20,8 +20,9 @@ systemctl restart munge
 
 munge -n | unmunge | grep STATUS
 
-sudo cp scripts/fabai/slurm.conf /etc/slurm/slurm.conf
-sudo cp scripts/fabai/gres.conf /etc/slurm/gres.conf
+# choose the apprpriate folder for the machine hardware (i.e. replace "h200x1")
+sudo cp configs/fabai/slurm/h200x1/slurm.conf /etc/slurm/slurm.conf
+sudo cp configs/fabai/slurm/h200x1/gres.conf /etc/slurm/gres.conf
 
 sudo mkdir -p /var/lib/slurm-llnl/slurmd
 sudo mkdir -p /var/lib/slurm-llnl/slurmctld
@@ -37,9 +38,11 @@ squeue
 scancel -u <username>
 
 # manually launch slurmctld/slurmd with verbosity
-slurmctld -Dvvvv
-slurmd -Dvvvv
+sudo slurmctld -Dvvvv
+sudo slurmd -Dvvvv
 
+# resume node
+scontrol update nodename=lhtraineval state=resume
 
 sudo scontrol delete ReservationName=smollm
 sudo scontrol create reservation ReservationName=smollm StartTime=now Duration=infinite Nodes=all Users=ubuntu
@@ -50,6 +53,6 @@ scontrol show reservation
 
 
 ```
-uv sync --group nanosets --group test --group az --group fast-modeling
+uv sync --group nanosets --group test --group az --group s3 --group fast-modeling
 uv run torchrun --nproc_per_node=1 run_train.py --config-file scripts/fabai/azure_test_config.yaml
 ```

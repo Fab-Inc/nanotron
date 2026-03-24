@@ -1,16 +1,15 @@
 # %%
-from pathlib import Path
+import json
 import os
 import subprocess
-import json
+from pathlib import Path
+from shutil import rmtree
 
+import yaml
 from dotenv import load_dotenv
 
-from fsspec import url_to_fs
-from nanotron.config import Config
+from nanotron.config import Config, LightEvalConfig, get_config_from_file
 from nanotron.eval.one_job_runner import LightEvalRunner
-from s3fs.core import S3FileSystem
-import aiobotocore.session
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -28,7 +27,11 @@ nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
 lighteval_config_file = (
     ROOT / "configs" / "fabai" / "lighteval" / "lighteval-config.yaml"
 )
-nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
+lighteval_config = get_config_from_file(
+    lighteval_config_file, config_class=LightEvalConfig
+)
+
+nanotron_config.lighteval = lighteval_config
 
 # %%
 checkpoints_dir = "s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-100/"
@@ -64,7 +67,25 @@ for step in steps:
     le_runner = LightEvalRunner(
         config=nanotron_config, parallel_context=nanotron_config.parallelism
     )
-    ckpt_file = str(checkpoints_dir / f"{step}" / "config.yaml")
-    print(ckpt_file)
+    if isinstance(checkpoints_dir, Path):
+        ckpt_file = str(checkpoints_dir / f"{step}" / "config.yaml")
+    else:
+        print("Downloading checkpoint from s3")
+        local_path = ROOT / "checkpoints/smol-playbook-checkpoints" / f"{step}"
+        print(f"Saving to: {local_path}")
+        local_path.mkdir(exist_ok=True, parents=True)
+        s5cmd_path = str(ROOT / ".venv/bin/s5cmd")
+        cmd = [s5cmd_path, "--json"]
+        cmd += ["cp"]
+        cmd += [f"{checkpoints_dir}{step}/*", str(local_path)]
+        # print(" ".join(cmd))
+        output = subprocess.run(cmd, capture_output=True)
+        if output.returncode != 0:
+            raise
+        ckpt_file = str(local_path / f"{step}" / "config.yaml")
+        print("Done")
+    print(f"Using checkpoint file: {ckpt_file}")
     runner_input = [{"destination": ckpt_file}]
     le_runner.eval_single_checkpoint(runner_input)
+    if not isinstance(checkpoints_dir, Path):
+        rmtree(local_path)

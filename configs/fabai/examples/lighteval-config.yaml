@@ -1,6 +1,5 @@
-eval_config_override: ./configs/examples/lighteval-config.yaml
 batch_size: 16
-eval_interval: 1000
+eval_interval: 10
 generation:
   n_samples: 1
   sampler: greedy

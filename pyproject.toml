@@ -23,10 +23,13 @@ dependencies = [
     "tqdm",
     "datasets<=4.5.0",
     "torchtyping",
-    "lighteval",
+    "lighteval[multilingual]",
     "pillow",
     "matplotlib>=3.10.8",
     "seaborn>=0.13.2",
+    "langcodes",
+    "language-data>=1.4.0",
+    "spacy>=3.8.11",
 ]
 
 [tool.ruff]

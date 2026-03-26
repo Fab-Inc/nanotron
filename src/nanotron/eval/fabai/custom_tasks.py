@@ -1,0 +1,4 @@
+from .pedagogy_cdpk import TASKS_TABLE as TASKS_TABLE_CDPK
+from .smollm3_evals import TASKS_TABLE as TASKS_TABLE_SMOLLM3
+
+TASKS_TABLE = TASKS_TABLE_CDPK + TASKS_TABLE_SMOLLM3

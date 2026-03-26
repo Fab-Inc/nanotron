@@ -32,6 +32,7 @@ lighteval_config = get_config_from_file(
 )
 
 nanotron_config.lighteval = lighteval_config
+nanotron_config.lighteval.eval_config_override = str(lighteval_config_file)
 
 # %%
 checkpoints_dir = "s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-100/"
@@ -62,7 +63,7 @@ if isinstance(checkpoints_dir, Path):
     steps = sorted(int(f.parent.name) for f in all_ckpt)
 
 # %%
-for step in steps:
+for step in steps[:1]:
     nanotron_config.general.step = step
     le_runner = LightEvalRunner(
         config=nanotron_config, parallel_context=nanotron_config.parallelism
@@ -72,20 +73,23 @@ for step in steps:
     else:
         print("Downloading checkpoint from s3")
         local_path = ROOT / "checkpoints/smol-playbook-checkpoints" / f"{step}"
-        print(f"Saving to: {local_path}")
-        local_path.mkdir(exist_ok=True, parents=True)
-        s5cmd_path = str(ROOT / ".venv/bin/s5cmd")
-        cmd = [s5cmd_path, "--json"]
-        cmd += ["cp"]
-        cmd += [f"{checkpoints_dir}{step}/*", str(local_path)]
-        # print(" ".join(cmd))
-        output = subprocess.run(cmd, capture_output=True)
-        if output.returncode != 0:
-            raise
-        ckpt_file = str(local_path / f"{step}" / "config.yaml")
+        if not local_path.exists():
+            local_path.mkdir(exist_ok=True, parents=True)
+            print(f"Saving to: {local_path}")
+            local_path.mkdir(exist_ok=True, parents=True)
+            s5cmd_path = str(ROOT / ".venv/bin/s5cmd")
+            cmd = [s5cmd_path, "--json"]
+            cmd += ["cp"]
+            cmd += [f"{checkpoints_dir}{step}/*", str(local_path)]
+            # print(" ".join(cmd))
+            output = subprocess.run(cmd)#, capture_output=True)
+            if output.returncode != 0:
+                raise
+        ckpt_file = str(local_path / "config.yaml")
         print("Done")
     print(f"Using checkpoint file: {ckpt_file}")
     runner_input = [{"destination": ckpt_file}]
     le_runner.eval_single_checkpoint(runner_input)
-    if not isinstance(checkpoints_dir, Path):
-        rmtree(local_path)
+    # if not isinstance(checkpoints_dir, Path):
+    #     rmtree(local_path)
+

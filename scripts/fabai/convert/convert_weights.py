@@ -4,7 +4,7 @@ from typing import Optional
 
 import nanotron
 import torch
-from nanotron.config import LlamaConfig as NanotronLlamaConfig
+from nanotron.config import Qwen2Config as NanotronQwen2Config
 from nanotron.config import (
     NanotronConfigs,
     OneForwardOneBackwardPipelineEngine,
@@ -12,12 +12,11 @@ from nanotron.config import (
     PipelineEngine,
     TensorParallelLinearMode,
 )
-from nanotron.models.llama import LlamaForTraining
 from nanotron.models.qwen import Qwen2ForTraining
 from nanotron.trainer import mark_tied_parameters
 
 
-def get_weight_mapping(config: NanotronLlamaConfig, nt_to_hf: bool = True) -> dict[str, str]:
+def get_weight_mapping(config: NanotronQwen2Config, nt_to_hf: bool = True) -> dict[str, str]:
     """Returns the nanotron to huggingface parameter mapping if `nt_to_hf`, otherwise the
     huggingface to nanotron mapping."""
 
@@ -114,8 +113,8 @@ def load_nanotron_model(
     device: torch.device = torch.device("cuda"),
     dtype: torch.dtype = torch.bfloat16,
     checkpoint_path: Optional[Path] = None,
-    config_cls: Optional[NanotronConfigs] = NanotronLlamaConfig,
-) -> LlamaForTraining:
+    config_cls: Optional[NanotronConfigs] = NanotronQwen2Config,
+) -> Qwen2ForTraining:
     """
     Creates and returns a nanotron model.
     If `model_config` is None, then `checkpoint_path` must be set, in which case
@@ -134,30 +133,17 @@ def load_nanotron_model(
         pipeline_parallel_size=parallel_config.pp,
         tensor_parallel_size=parallel_config.tp,
     )
-    if config_cls == NanotronLlamaConfig:
-        nanotron_model = nanotron.models.build_model(
-            model_builder=lambda: LlamaForTraining(
-                config=model_config,
-                parallel_context=parallel_context,
-                parallel_config=parallel_config,
-                random_states=None,
-            ),
+    nanotron_model = nanotron.models.build_model(
+        model_builder=lambda: Qwen2ForTraining(
+            config=model_config,
             parallel_context=parallel_context,
-            dtype=dtype,
-            device=device,
-        )
-    else:
-        nanotron_model = nanotron.models.build_model(
-            model_builder=lambda: Qwen2ForTraining(
-                config=model_config,
-                parallel_context=parallel_context,
-                parallel_config=parallel_config,
-                random_states=None,
-            ),
-            parallel_context=parallel_context,
-            dtype=dtype,
-            device=device,
-        )
+            parallel_config=parallel_config,
+            random_states=None,
+        ),
+        parallel_context=parallel_context,
+        dtype=dtype,
+        device=device,
+    )
     mark_tied_parameters(model=nanotron_model, parallel_context=parallel_context)
     # Load checkpoint directly in memory and then only keep the state dictionary
     if checkpoint_path is not None:

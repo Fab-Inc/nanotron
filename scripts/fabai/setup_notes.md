@@ -54,5 +54,5 @@ scontrol show reservation
 
 ```
 uv sync --group nanosets --group test --group az --group s3 --group fast-modeling
-uv run torchrun --nproc_per_node=1 run_train.py --config-file scripts/fabai/azure_test_config.yaml
+uv run torchrun --nproc_per_node=1 run_train.py --config-file configs/fabai/base-run-100-no-evals.yaml
 ```

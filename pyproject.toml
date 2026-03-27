@@ -80,7 +80,7 @@ fast-modeling = [
 ]
 
 nanosets = [
-     "transformers<5",
+     "transformers<5,>=4.53.0",
      "datatrove[io,processing]",
      "numba",
 ]

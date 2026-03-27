@@ -2271,7 +2271,7 @@ fast-modeling = [
 nanosets = [
     { name = "datatrove", extras = ["io", "processing"], git = "https://github.com/huggingface/datatrove.git?rev=7939834eb71173181c658798d386c477a01342af" },
     { name = "numba" },
-    { name = "transformers", specifier = "<5" },
+    { name = "transformers", specifier = ">=4.53.0,<5" },
 ]
 s3 = [
     { name = "boto3" },

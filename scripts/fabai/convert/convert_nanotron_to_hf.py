@@ -10,14 +10,17 @@ from pathlib import Path
 from typing import Literal, Optional, Type
 
 import torch
-from nanotron.config import LlamaConfig as NanotronLlamaConfig, Qwen2Config as NanotronQwen2Config
+from nanotron.config import Qwen2Config as NanotronQwen2Config
 from nanotron.config import NanotronConfigs
 from nanotron.models import init_on_device_and_dtype
-from nanotron.models.llama import LlamaForTraining
-from transformers import AutoTokenizer, LlamaForCausalLM
-from transformers import LlamaConfig as HFLlamaConfig
+from nanotron.models.qwen import Qwen2ForTraining
+from transformers import AutoTokenizer
+from transformers.models.smollm3 import (
+    SmolLM3Config as HFSmolLM3Config,
+    SmolLM3ForCausalLM,
+)
 
-from .convert_weights import get_config_mapping, get_weight_mapping, load_nanotron_model
+from convert_weights import get_config_mapping, get_weight_mapping, load_nanotron_model
 
 TEST_PROMPT = "What is the meaning of the word chutzpah?\nThe word chutzpah means"
 
@@ -52,7 +55,11 @@ def _handle_attention_block(
     if part == "q":
         return interleave_weight(qkv[:index_end_q]) if interleave else qkv[:index_end_q]
     elif part == "k":
-        return interleave_weight(qkv[index_end_q:index_end_k]) if interleave else qkv[index_end_q:index_end_k]
+        return (
+            interleave_weight(qkv[index_end_q:index_end_k])
+            if interleave
+            else qkv[index_end_q:index_end_k]
+        )
     elif part == "v":
         return qkv[index_end_k:]
 
@@ -69,9 +76,9 @@ def _handle_gate_up_proj(gate_up_proj: torch.Tensor, gate: bool) -> torch.Tensor
 
 
 def convert_nt_to_hf(
-    nanotron_model: LlamaForTraining,
-    hf_model: LlamaForCausalLM,
-    model_config: NanotronLlamaConfig,
+    nanotron_model: Qwen2ForTraining,
+    hf_model: SmolLM3ForCausalLM,
+    model_config: NanotronQwen2Config,
     interleave_qkv: bool = False,
 ):
     """Converts the weights from the nanotron_model to hf_model, making modifications
@@ -106,17 +113,28 @@ def convert_nt_to_hf(
                 param_hf.copy_(param)
 
 
-def get_hf_config(config: NanotronLlamaConfig) -> HFLlamaConfig:
+def get_hf_config(config: NanotronConfigs) -> HFSmolLM3Config:
     """Converts a nanotron configuration to huggingface configuration."""
-    attrs = {key: getattr(config, value) for key, value in get_config_mapping(nt_to_hf=False).items()}
-    return HFLlamaConfig(**attrs)
+    attrs = {
+        key: getattr(config, value)
+        for key, value in get_config_mapping(nt_to_hf=False).items()
+    }
+
+    if config.sliding_window_size is not None:
+        attrs["use_sliding_window"] = True
+        attrs["sliding_window"] = config.sliding_window_size
+    else:
+        attrs["use_sliding_window"] = False
+        attrs["sliding_window"] = None
+    attrs["no_rope_layer_interval"] = config.no_rope_layer or 4
+    return HFSmolLM3Config(**attrs)
 
 
 def convert_checkpoint_and_save(
     checkpoint_path: Path,
     save_path: Path,
     tokenizer_name: Optional[str] = None,
-    config_cls: Type[NanotronConfigs] = NanotronLlamaConfig,
+    config_cls: Type[NanotronConfigs] = NanotronQwen2Config,
 ):
     """Loads the nanotron checkpoint in `checkpoint_path`, creates
     a new huggingface instance, copies the weights from the nanotron checkpoint
@@ -133,7 +151,7 @@ def convert_checkpoint_and_save(
     # Init huggingface model.
     with init_on_device_and_dtype(torch.device("cuda"), torch.bfloat16):
         model_config_hf = get_hf_config(model_config)
-        hf_model = LlamaForCausalLM._from_config(model_config_hf)
+        hf_model = SmolLM3ForCausalLM._from_config(model_config_hf)
 
     # Copy weights, initialize tokenizer and save model.
     if tokenizer_name is not None:
@@ -152,29 +170,36 @@ def check_converted_model_generation(save_path: Path):
     input_ids = tokenizer(TEST_PROMPT, return_tensors="pt")["input_ids"].cuda()
     print("Inputs:", tokenizer.batch_decode(input_ids))
 
-    model = LlamaForCausalLM.from_pretrained(save_path).cuda().bfloat16()
+    model = SmolLM3ForCausalLM.from_pretrained(save_path).cuda().bfloat16()
     out = model.generate(input_ids, max_new_tokens=100)
     print("Generation (converted): ", tokenizer.batch_decode(out))
 
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Convert Nanotron weights to HF format")
-    parser.add_argument("--checkpoint_path", type=Path, default="llama-7b", help="Path to the checkpoint")
-    parser.add_argument("--save_path", type=Path, default="llama-7b-hf", help="Path to save the HF model")
-    parser.add_argument("--tokenizer_name", type=str, default="meta-llama/Llama-2-7b-chat-hf")
-    parser.add_argument("--config_cls", type=str, default="LlamaConfig", help="Config class to use for conversion (Either LlamaConfig or Qwen2Config)")
+    parser.add_argument(
+        "--checkpoint_path",
+        type=Path,
+        default="smollm3/",
+        help="Path to the checkpoint",
+    )
+    parser.add_argument(
+        "--save_path",
+        type=Path,
+        default="smollm3-hf/",
+        help="Path to save the HF model",
+    )
+    parser.add_argument(
+        "--tokenizer_name", type=str, default="HuggingFaceTB/SmolLM3-3B"
+    )
     args = parser.parse_args()
-
-    if args.config_cls == "LlamaConfig":
-        config_cls = NanotronLlamaConfig
-    elif args.config_cls == "Qwen2Config":
-        config_cls = NanotronQwen2Config
-    else:
-        raise ValueError(f"Invalid config class: {args.config_cls}. Should be one of [NanotronLlamaConfig, NanotronQwen2Config]")
 
     # Convert Nanotron model to HF format.
     convert_checkpoint_and_save(
-        checkpoint_path=args.checkpoint_path, save_path=args.save_path, tokenizer_name=args.tokenizer_name, config_cls=config_cls
+        checkpoint_path=args.checkpoint_path,
+        save_path=args.save_path,
+        tokenizer_name=args.tokenizer_name,
+        config_cls=NanotronQwen2Config,
     )
 
     # Check if the conversion was successful by generating some text.

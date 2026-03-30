@@ -90,6 +90,6 @@ for step in steps:
     print(f"Using checkpoint file: {ckpt_file}")
     runner_input = [{"destination": ckpt_file}]
     le_runner.eval_single_checkpoint(runner_input)
-    if not isinstance(checkpoints_dir, Path):
-        rmtree(local_path)
+    # if not isinstance(checkpoints_dir, Path):
+    #     rmtree(local_path)
 

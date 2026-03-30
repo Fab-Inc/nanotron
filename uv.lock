@@ -1815,7 +1815,7 @@ wheels = [
 [[package]]
 name = "lighteval"
 version = "0.6.0.dev0"
-source = { git = "https://github.com/Fab-Inc/lighteval.git?rev=develop-earlyversion#d423b4f28949bcd7697cb692721c368347adfe41" }
+source = { git = "https://github.com/Fab-Inc/lighteval.git?rev=develop-earlyversion#867dd433a62ea78ba64ce6984bdf412dfc3df751" }
 dependencies = [
     { name = "aenum" },
     { name = "colorama" },

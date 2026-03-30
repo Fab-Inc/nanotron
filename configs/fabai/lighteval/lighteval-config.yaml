@@ -1,4 +1,4 @@
-batch_size: 16
+batch_size: 128
 eval_interval: 10
 generation:
   n_samples: 1
@@ -34,6 +34,6 @@ slurm_script_dir: ./eval_results/launch-config
 tasks:
   custom_tasks: nanotron.eval.fabai.custom_tasks
   dataset_loading_processes: 1
-  # tasks: custom|pedagogy_cdpk_cloze|0|0,leaderboard|hellaswag|0|1,custom|arc_cf|0|1,custom|mmlu_cf|0|1,custom|mmlu_pro_cf|0|1,custom|boolq_cf|0|1,custom|commonsenseqa_cf|0|1,leaderboard|winogrande|0|1,custom|openbookqa_cf|0|1
-  tasks: custom|pedagogy_cdpk_cloze|0|0,leaderboard|hellaswag|0|1,custom|arc_cf|0|1,custom|boolq_cf|0|1,custom|commonsenseqa_cf|0|1,leaderboard|winogrande|0|1,custom|openbookqa_cf|0|1
+  tasks: custom|pedagogy_cdpk_cloze|0|0,leaderboard|hellaswag|0|1,custom|arc_cf|0|1,custom|mmlu_cf|0|1,custom|mmlu_pro_cf|0|1,custom|boolq_cf|0|1,custom|commonsenseqa_cf|0|1,leaderboard|winogrande|0|1,custom|openbookqa_cf|0|1
+  # tasks: custom|pedagogy_cdpk_cloze|0|0,leaderboard|hellaswag|0|1,custom|arc_cf|0|1,custom|boolq_cf|0|1,custom|commonsenseqa_cf|0|1,leaderboard|winogrande|0|1,custom|openbookqa_cf|0|1
 upload_to_wandb: false

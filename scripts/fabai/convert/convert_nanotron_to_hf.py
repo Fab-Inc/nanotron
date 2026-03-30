@@ -10,17 +10,22 @@ from pathlib import Path
 from typing import Literal, Optional, Type
 
 import torch
-from nanotron.config import Qwen2Config as NanotronQwen2Config
-from nanotron.config import NanotronConfigs
-from nanotron.models import init_on_device_and_dtype
-from nanotron.models.qwen import Qwen2ForTraining
+from convert_weights import get_config_mapping, get_weight_mapping, load_nanotron_model
+from dotenv import load_dotenv
 from transformers import AutoTokenizer
 from transformers.models.smollm3 import (
     SmolLM3Config as HFSmolLM3Config,
+)
+from transformers.models.smollm3 import (
     SmolLM3ForCausalLM,
 )
 
-from convert_weights import get_config_mapping, get_weight_mapping, load_nanotron_model
+from nanotron.config import NanotronConfigs
+from nanotron.config import Qwen2Config as NanotronQwen2Config
+from nanotron.models import init_on_device_and_dtype
+from nanotron.models.qwen import Qwen2ForTraining
+
+load_dotenv(override=True)
 
 TEST_PROMPT = "What is the meaning of the word chutzpah?\nThe word chutzpah means"
 

@@ -63,7 +63,7 @@ if isinstance(checkpoints_dir, Path):
     steps = sorted(int(f.parent.name) for f in all_ckpt)
 
 # %%
-for step in steps[:1]:
+for step in steps:
     nanotron_config.general.step = step
     le_runner = LightEvalRunner(
         config=nanotron_config, parallel_context=nanotron_config.parallelism
@@ -90,6 +90,6 @@ for step in steps[:1]:
     print(f"Using checkpoint file: {ckpt_file}")
     runner_input = [{"destination": ckpt_file}]
     le_runner.eval_single_checkpoint(runner_input)
-    # if not isinstance(checkpoints_dir, Path):
-    #     rmtree(local_path)
+    if not isinstance(checkpoints_dir, Path):
+        rmtree(local_path)
 

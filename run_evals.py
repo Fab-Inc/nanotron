@@ -1,5 +1,8 @@
 import argparse
 import os
+import subprocess
+from pathlib import Path
+from shutil import rmtree
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -312,7 +315,20 @@ if __name__ == "__main__":
     #     lighteval_config_path=lighteval_config_path,
     #     cache_dir=args.cache_dir,
     # )
+    hf_path = str(Path(args.checkpoint_config_path).parents[1] / 'hf') + "/"
+    cmd = [
+        "python",
+        "scripts/fabai/convert/convert_nanotron_to_hf.py",
+        f"--checkpoint_path={Path(args.checkpoint_config_path).parent}",
+        f"--save_path={hf_path}"
+    ]
+    subprocess.run(cmd)
+
     run_transformers(
-        checkpoint_path=args.checkpoint_config_path,
+        checkpoint_path=hf_path,
         lighteval_config_path=lighteval_config_path,
     )
+
+    rmtree(hf_path)
+
+

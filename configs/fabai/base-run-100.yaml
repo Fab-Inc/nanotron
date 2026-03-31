@@ -144,19 +144,19 @@ tokens:
   val_check_interval: 10
 lighteval:
   eval_config_override: ./configs/fabai/lighteval/lighteval-config.yaml
-batch_size: 128
-eval_interval: 10
-generation:
-  n_samples: 1
-  sampler: greedy
-  seed: 42
-  temperature: 0.0
-  top_k: 0
-  top_p: 1.0
-  use_cache: true
-local_checkpoint_dir: ./checkpoints/smol-playbook-checkpoints
-logging:
-  local_output_path: ./eval_results
+  batch_size: 128
+  eval_interval: 10
+  generation:
+    n_samples: 1
+    sampler: greedy
+    seed: 42
+    temperature: 0.0
+    top_k: 0
+    top_p: 1.0
+    use_cache: true
+  local_checkpoint_dir: ./checkpoints/smol-playbook-checkpoints
+  logging:
+    local_output_path: ./eval_results
   logs_path: ./eval_results/logs
   nanotron_path: ./
   parallelism:

@@ -72,6 +72,7 @@ def run_transformers(
         # We are getting an type error, because the get_config_from_file is not correctly typed,
         lighteval_config: LightEvalConfig = get_config_from_file(lighteval_config_path, config_class=LightEvalConfig)  # type: ignore
         basemodel_config = BaseModelConfig(checkpoint_path)
+        basemodel_config.model_parallel = False
         base_model = BaseModel(env_config=env_config, config=basemodel_config)
         # nanotron_config = FullNanotronConfig(lighteval_config, model_config)
 

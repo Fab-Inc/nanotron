@@ -174,6 +174,7 @@ fi
 # Set environment variables
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 # export CUBLAS_WORKSPACE_CONFIG=":4096:8"
+export CUDA_VISIBLE_DEVICES=$(nvidia-smi -L | tail -n 1 | cut -d: -f1 | cut -d' ' -f2)
 
 # Set HuggingFace cache locations
 export HUGGINGFACE_HUB_CACHE={slurm_config.hf_cache}
@@ -297,6 +298,8 @@ echo "END TIME: $(date)"
         "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
         "HOME": os.path.expanduser("~"),
         "HUGGING_FACE_HUB_TOKEN": os.environ["HUGGING_FACE_HUB_TOKEN"],
+        "AWS_ACCESS_KEY_ID": os.environ.get("AWS_ACCESS_KEY_ID", ""),
+        "AWS_SECRET_ACCESS_KEY": os.environ.get("AWS_SECRET_ACCESS_KEY", ""),
     }
 
     try:

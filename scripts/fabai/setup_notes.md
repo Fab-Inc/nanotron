@@ -73,10 +73,7 @@ scontrol update nodename=lhtraineval state=resume
 sudo scontrol delete ReservationName=smollm
 sudo scontrol create reservation ReservationName=smollm StartTime=now Duration=infinite Nodes=all Users=ubuntu
 scontrol show reservation
-
 ```
-
-
 
 ```
 uv run torchrun --nproc_per_node=1 run_train.py --config-file configs/fabai/base-run-100-no-evals.yaml

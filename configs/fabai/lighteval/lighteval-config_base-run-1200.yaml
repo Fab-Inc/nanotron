@@ -1,4 +1,4 @@
-s3_save_path: s3://qurating-evals-183631302286-eu-west-2-an/base-run-1200
+s3_save_path: ./eval_results/results
 batch_size: 128
 eval_interval: 100
 generation:

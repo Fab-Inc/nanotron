@@ -11,10 +11,11 @@ ROOT = Path(__file__).resolve().parents[3]
 
 # %%
 results_dir = ROOT / "eval_results" / "results"
+run_name = "base-run-1200"
 
 results_files = results_dir.rglob("*.json")
 
-steps = sorted(rf.parent.name for rf in results_files)
+steps = sorted(rf.parent.name for rf in results_files if run_name in rf.parent.name)
 
 res_list_dict = defaultdict(list)
 for step in steps:

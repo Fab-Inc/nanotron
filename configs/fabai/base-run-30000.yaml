@@ -112,7 +112,7 @@ parallelism:
   tp: 1
   tp_linear_async_communication: true
   tp_mode: REDUCE_SCATTER
-  tp_recompute_allgather: true1
+  tp_recompute_allgather: true
 profiler: null
 s3_upload:
   remove_after_upload: true

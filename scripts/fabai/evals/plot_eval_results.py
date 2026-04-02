@@ -11,18 +11,21 @@ ROOT = Path(__file__).resolve().parents[3]
 
 # %%
 results_dir = ROOT / "eval_results" / "results"
-run_name = "base-run-1200"
+run_name = "base-run-30000"
+step_size = 1000
 
 results_files = results_dir.rglob("*.json")
 
-steps = sorted(rf.parent.name for rf in results_files if run_name in rf.parent.name)
+files = sorted(
+    (rf for rf in results_files if run_name in rf.parent.name), key=lambda x: x.name
+)
 
 res_list_dict = defaultdict(list)
-for step in steps:
-    step_file_dir = results_dir / f"{step}"
-    step_file = sorted(step_file_dir.glob("*.json"))
-    assert len(step_file) >= 1
-    step_file = step_file[-1]
+for step_file in files:
+    # step_file_dir = results_dir / f"{step}"
+    # step_file = sorted(step_file_dir.glob("*.json"))
+    # assert len(step_file) >= 1
+    # step_file = step_file[-1]
     with open(step_file, "r") as f:
         step_res = json.load(f)
     for eval, res in step_res["results"].items():
@@ -30,7 +33,9 @@ for step in steps:
 
 res_df_list = []
 for eval, res_list in res_list_dict.items():
-    df = pd.DataFrame(res_list, index=steps)
+    df = pd.DataFrame(
+        res_list, index=list(range(step_size, (len(files) + 1) * step_size, step_size))
+    )
     if "acc_norm" in df.columns:
         df["acc"] = df["acc_norm"]
         df["acc_stderr"] = df["acc_norm_stderr"]

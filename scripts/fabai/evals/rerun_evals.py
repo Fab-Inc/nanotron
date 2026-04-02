@@ -21,11 +21,11 @@ s3_kwargs = {
 }
 
 # %%
-nanotron_config_file = ROOT / "configs" / "fabai" / "base-run-100-no-evals.yaml"
+nanotron_config_file = ROOT / "configs" / "fabai" / "base-run-30000.yaml"
 nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
 
 lighteval_config_file = (
-    ROOT / "configs" / "fabai" / "lighteval" / "lighteval-config.yaml"
+    ROOT / "configs" / "fabai" / "lighteval" / "lighteval-config_base-run-30000.yaml"
 )
 lighteval_config = get_config_from_file(
     lighteval_config_file, config_class=LightEvalConfig
@@ -35,7 +35,7 @@ nanotron_config.lighteval = lighteval_config
 nanotron_config.lighteval.eval_config_override = str(lighteval_config_file)
 
 # %%
-checkpoints_dir = "s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-100/"
+checkpoints_dir = "s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-30000/"
 
 if isinstance(checkpoints_dir, str):
     if checkpoints_dir.startswith("s3://"):

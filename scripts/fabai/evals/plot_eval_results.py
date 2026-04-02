@@ -10,11 +10,11 @@ import seaborn as sns
 ROOT = Path(__file__).resolve().parents[3]
 
 # %%
-results_dir = ROOT / "eval_results" / "results" / "baseline"
+results_dir = ROOT / "eval_results" / "results"
 
 results_files = results_dir.rglob("*.json")
 
-steps = sorted(int(rf.parent.name) for rf in results_files)
+steps = sorted(rf.parent.name for rf in results_files)
 
 res_list_dict = defaultdict(list)
 for step in steps:
@@ -38,8 +38,19 @@ for eval, res_list in res_list_dict.items():
 res_df = pd.concat(res_df_list, axis=1)
 
 # %%
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(24, 16))
 
-sns.lineplot(res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1), ax=ax)
+sns.lineplot(
+    res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1), ax=ax, legend=False
+)
+
+# %%
+fig, ax = plt.subplots(figsize=(24, 16))
+
+sns.lineplot(
+    res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1).mean(axis=1),
+    ax=ax,
+    legend=False,
+)
 
 # fig.savefig(ROOT / "eval_results" / "test_res.png", dpi=300)

@@ -1,13 +1,33 @@
 # %%
 import os
 from pathlib import Path
+from typing import Tuple
 
+from datasets import load_dataset
+from datatrove.data import Document
 from datatrove.executor import LocalPipelineExecutor
 from datatrove.io import DataFolder
 from datatrove.pipeline.readers import ParquetReader
+from datatrove.pipeline.filters.base_filter import BaseFilter
 from datatrove.pipeline.tokens import DocumentTokenizer, DocumentTokenizerMerger
+from datatrove.pipeline.writers.disk_base import DiskWriter
 from dotenv import load_dotenv
 from transformers import AutoTokenizer
+
+# %%
+class QREvalFilter(BaseFilter):
+    def __init__(self, exclusion_writer: DiskWriter = None, batch_size: int = 1):
+        super().__init__(exclusion_writer, batch_size)
+        #### load eval dataset which will be used to remove items from training
+        # data to avoid contamination
+        eval_dataset = load_dataset(
+            "AI-for-Education/qurating-core-edu-pairs", split="train"
+        )
+        self.exclude_ids = sorted(set([row["high_id"] for row in eval_dataset.to_list()]))
+    
+    def filter(self, doc: Document) -> bool | Tuple[bool, str]:
+        return doc.id not in self.exclude_ids
+
 
 # %%
 # pqr = ParquetReader(
@@ -35,7 +55,7 @@ if __name__ == "__main__":
     OUTPUT_FOLDER_MERGER = (
         "az://quratingfiltered-preprocessed"
         "/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
-        f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}"
+        f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}_filtered-qreval"
     )
     if isinstance(OUTPUT_FOLDER, str) and not OUTPUT_FOLDER.startswith("az://"):
         OUTPUT_FOLDER = Path(OUTPUT_FOLDER)
@@ -74,6 +94,7 @@ if __name__ == "__main__":
                 data_folder=df,
                 # limit=5000,
             ),
+            QREvalFilter(),
             DocumentTokenizer(
                 output_folder=(
                     str(OUTPUT_FOLDER)
@@ -113,7 +134,7 @@ if __name__ == "__main__":
                 ),
                 save_filename=f"{DATASET_NAME}",
                 seed=SEED_MERGER,
-                max_tokens_per_file=500e6
+                max_tokens_per_file=int(500e6),
             )
         ],
         depends=dist_executor,

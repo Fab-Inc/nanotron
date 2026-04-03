@@ -1,7 +1,18 @@
 If we need to install nvidia drivers, first install linux-headers
 ```
- sudo apt-get install linux-headers-$(uname -r)
+sudo apt-get install linux-headers-$(uname -r)
 ```
+Might need to first run
+```
+sudo apt-get dist-upgrade
+```
+then reboot.
+
+Make sure you install cmake, build-essential, python3-dev (needed for kenlm build from datatrove dependency and nvidia driver install)
+```
+sudo apt install cmake build-essential python3-dev
+```
+
 Then install cuda and nvidia drivers for cuda 12.4 (version 12.4 is needed to match the pytorch version in dependencies)
 ```
 wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run
@@ -14,10 +25,6 @@ nvidia-smi -q -i 0 | grep -i -A 2 Fabric
 ```
 (see: https://docs.nvidia.com/datacenter/tesla/fabric-manager-user-guide/index.html#initializing-nvswitch-and-nvlink)
 
-Make sure you install cmake, build-essential, python3-dev (needed for kenlm build from datatrove dependency)
-```
-sudo apt install cmake build-essential python3-dev
-```
 
 Install project with uv
 ```

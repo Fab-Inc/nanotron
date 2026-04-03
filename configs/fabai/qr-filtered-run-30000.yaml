@@ -10,9 +10,11 @@ checkpoints:
 data_stages:
 - data:
     dataset:
+      # dataset_read_path:
+      # - /data/tmp/quratingfiltered-preprocessed
       dataset_folder:
-        # fwe
-        - az://additional-datasets-preprocessed/tokenized-merged/outputs/fineweb-edu_50BT/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
+        # fwe filtered
+        - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973
         # finemath
         - az://additional-datasets-preprocessed/tokenized-merged/outputs/finemath_3plus/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
         # stack-edu-python
@@ -36,7 +38,7 @@ general:
   consumed_train_samples: null
   ignore_sanity_checks: true
   project: qurating-smol-playbook
-  run: base-run-30000
+  run: qr-filtered-run-30000
   seed: 6
   step: null
 logging:
@@ -117,7 +119,7 @@ s3_upload:
   s5cmd_concurrency: 5
   s5cmd_numworkers: 16
   s5cmd_path: .venv/bin/s5cmd
-  upload_s3_path: s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-30000
+  upload_s3_path: s3://qurating-checkpoints-183631302286-eu-west-2-an/qr-filtered-run-30000
   s3_region: eu-west-2-an
 tokenizer:
   tokenizer_max_length: 4096
@@ -135,7 +137,7 @@ tokens:
   train_steps: 30000 #
   val_check_interval: 100
 lighteval:
-  eval_config_override: ./configs/fabai/lighteval/lighteval-config_base-run-30000.yaml
+  eval_config_override: ./configs/fabai/lighteval/lighteval-config_qr-filtered-run-30000.yaml
   s3_save_path: ./eval_results/results
   batch_size: 128
   eval_interval: 1000
@@ -174,7 +176,7 @@ lighteval:
     custom_tasks: nanotron.eval.fabai.custom_tasks
     dataset_loading_processes: 1
     tasks: custom|pedagogy_cdpk_cloze|0|0,leaderboard|hellaswag|0|1,custom|arc_cf|0|1,custom|mmlu_cf|0|1,custom|mmlu_pro_cf|0|1,custom|boolq_cf|0|1,custom|commonsenseqa_cf|0|1,leaderboard|winogrande|0|1,custom|openbookqa_cf|0|1
-  upload_to_wandb: true
-  wandb_entity: fabdata
-  wandb_project: qurating-smol-playbook
+  # upload_to_wandb: true
+  # wandb_entity: fabdata
+  # wandb_project: qurating-smol-playbook
 

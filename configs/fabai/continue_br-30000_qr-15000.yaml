@@ -36,10 +36,6 @@ data_stages:
       dataset_folder:
         # fwe
         - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973_filtered-qreval
-      dataset_weights:
-        - 0.7
-        - 0.1
-        - 0.2
       pad_samples_to_global_batch_size: false
       return_positions: true
       token_size_in_bytes: 4
@@ -48,7 +44,7 @@ data_stages:
       vocab_size: 128256
     num_loading_workers: 0
     seed: 6
-  name: stable
+  name: continued_qr
   start_training_step: 30001
 general:
   benchmark_csv_path: null

@@ -121,7 +121,10 @@ class BlendableDataset(torch.utils.data.Dataset):
             # find idx of dataset that matches the folder path
             for idx, dataset in enumerate(datasets):
                 for folder_path, consumed_tokens in consumed_tokens_per_dataset_folder.items():
-                    if dataset.folder_path == folder_path:
+                    ds_folder_path = dataset.folder_path
+                    if hasattr(ds_folder_path, "path"):
+                        ds_folder_path = ds_folder_path.path
+                    if ds_folder_path == folder_path:
                         self.consumed_tokens[idx] = consumed_tokens
                         log_rank(f"[BlendableDataset] Setting consumed_tokens for dataset {idx} ({dataset.folder_path}) to {consumed_tokens}", logger=logger, level=logging.INFO, rank=0)
         
@@ -132,7 +135,10 @@ class BlendableDataset(torch.utils.data.Dataset):
         if offsets_in_samples is not None:
             for idx, dataset in enumerate(datasets):
                 for folder_path, offset in offsets_in_samples.items():
-                    if dataset.folder_path == folder_path:
+                    ds_folder_path = dataset.folder_path
+                    if hasattr(ds_folder_path, "path"):
+                        ds_folder_path = ds_folder_path.path
+                    if ds_folder_path == folder_path:
                         self.offsets_in_samples[idx] = offset
                         log_rank(f"[BlendableDataset] Applying offset {offset} samples to dataset {idx} ({dataset.folder_path})", logger=logger, level=logging.INFO, rank=0)
 

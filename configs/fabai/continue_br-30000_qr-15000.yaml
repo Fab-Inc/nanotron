@@ -36,10 +36,6 @@ data_stages:
       dataset_folder:
         # fwe
         - az://quratingfiltered-preprocessed/qurater_gemma-3-4b-pt_ds-ours_v2-200000/tokenized-shuffled_seed-342045735_merge-seed-25374973_filtered-qreval
-        # finemath
-        - az://additional-datasets-preprocessed/tokenized-merged/outputs/finemath_3plus/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
-        # stack-edu-python
-        - az://additional-datasets-preprocessed/tokenized-merged/outputs/stack-edu-python/sampler_seed-48256546/tokenized-shuffled_seed-342045735_merge-seed_8235496
       dataset_weights:
         - 0.7
         - 0.1

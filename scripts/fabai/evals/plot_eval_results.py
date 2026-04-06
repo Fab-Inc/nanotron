@@ -29,6 +29,8 @@ for step_file in files:
     with open(step_file, "r") as f:
         step_res = json.load(f)
     for eval, res in step_res["results"].items():
+        if eval.startswith(("custom|arc_cf:", "custom|mmlu_cf:")) and "_average" not in eval:
+            continue
         res_list_dict[eval].append(res)
 
 res_df_list = []
@@ -47,8 +49,9 @@ res_df = pd.concat(res_df_list, axis=1)
 fig, ax = plt.subplots(figsize=(24, 16))
 
 sns.lineplot(
-    res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1), ax=ax, legend=False
+    res_df.loc[:, (slice(None), "acc")].droplevel(1, axis=1), ax=ax#, legend=False
 )
+ax.grid(visible=True, which="both")
 
 # %%
 fig, ax = plt.subplots(figsize=(24, 16))

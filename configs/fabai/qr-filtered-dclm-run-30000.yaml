@@ -41,7 +41,7 @@ general:
   consumed_train_samples: null
   ignore_sanity_checks: true
   project: qurating-smol-playbook
-  run: qr-filtered-run-30000
+  run: qr-filtered-dclm-run-30000
   seed: 6
   step: null
 logging:

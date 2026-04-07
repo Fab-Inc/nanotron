@@ -21,11 +21,15 @@ s3_kwargs = {
 }
 
 # %%
-nanotron_config_file = ROOT / "configs" / "fabai" / "base-run-30000.yaml"
+nanotron_config_file = ROOT / "configs" / "fabai" / "qr-filtered-dclm-run-30000.yaml"
 nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
 
 lighteval_config_file = (
-    ROOT / "configs" / "fabai" / "lighteval" / "lighteval-config_base-run-30000.yaml"
+    ROOT
+    / "configs"
+    / "fabai"
+    / "lighteval"
+    / "lighteval-config_qr-filtered-dclm-run-30000.yaml"
 )
 lighteval_config = get_config_from_file(
     lighteval_config_file, config_class=LightEvalConfig
@@ -35,7 +39,9 @@ nanotron_config.lighteval = lighteval_config
 nanotron_config.lighteval.eval_config_override = str(lighteval_config_file)
 
 # %%
-checkpoints_dir = "s3://qurating-checkpoints-183631302286-eu-west-2-an/base-run-30000/"
+checkpoints_dir = (
+    "s3://qurating-checkpoints-183631302286-eu-west-2-an/qr-filtered-dclm-run-30000/"
+)
 
 if isinstance(checkpoints_dir, str):
     if checkpoints_dir.startswith("s3://"):
@@ -80,9 +86,17 @@ for step in steps:
             s5cmd_path = str(ROOT / ".venv/bin/s5cmd")
             cmd = [s5cmd_path, "--json"]
             cmd += ["cp"]
+            cmd += [
+                "--exclude",
+                '"optimizer/*"',
+                "--exclude",
+                '"random/*"',
+                "--exclude",
+                '"lr_scheduler/*"',
+            ]
             cmd += [f"{checkpoints_dir}{step}/*", str(local_path)]
-            # print(" ".join(cmd))
-            output = subprocess.run(cmd)#, capture_output=True)
+            print(" ".join(cmd))
+            output = subprocess.run(cmd)  # , capture_output=True)
             if output.returncode != 0:
                 raise
         ckpt_file = str(local_path / "config.yaml")
@@ -92,4 +106,3 @@ for step in steps:
     le_runner.eval_single_checkpoint(runner_input)
     # if not isinstance(checkpoints_dir, Path):
     #     rmtree(local_path)
-

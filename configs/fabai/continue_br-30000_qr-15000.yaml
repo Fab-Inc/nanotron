@@ -132,7 +132,7 @@ s3_upload:
   s5cmd_concurrency: 5
   s5cmd_numworkers: 16
   s5cmd_path: .venv/bin/s5cmd
-  upload_s3_path: s3://qurating-checkpoints-183631302286-eu-west-2-an/continue_br-30000_qr-30000
+  upload_s3_path: s3://qurating-checkpoints-183631302286-eu-west-2-an/continue_br-30000_qr-15000
   s3_region: eu-west-2-an
 tokenizer:
   tokenizer_max_length: 4096

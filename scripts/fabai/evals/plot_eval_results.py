@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 # %%
 results_dir = ROOT / "eval_results" / "results"
-run_name = "base-run-30000"
+run_name = "qr-filtered-dclm-run-30000"
 step_size = 1000
 
 results_files = results_dir.rglob("*.json")

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 # %%
 results_dir = ROOT / "eval_results" / "results"
-run_names = ["base-run-30000", "qr-filtered-filtered-qreval-run-30000"]
+run_names = ["base-run-30000", "qr-filtered-filtered-qreval-run-30000", "qr-filtered-dclm-run-30000"]
 step_size = 1000
 
 res_df_full_list = []

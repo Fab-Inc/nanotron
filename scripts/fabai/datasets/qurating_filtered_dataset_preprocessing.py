@@ -47,7 +47,8 @@ if __name__ == "__main__":
     }
 
     # CONTAINER = "quratingfiltered-noemb"
-    CONTAINER = "quratingfiltered-corrected-noemb"
+    IN_CONTAINER = "quratingfiltered-corrected-noemb"
+    OUT_CONTAINER = "quratingfiltered-corrected-preprocessed"
     # SUFFIX = "_filtered-qreval"
     SUFFIX = ""
 
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     OUTPUT_FOLDER = Path(__file__).resolve().parent / "data"
 
     OUTPUT_FOLDER_MERGER = (
-        f"az://{CONTAINER}"
+        f"az://{OUT_CONTAINER}"
         "/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
         f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}{SUFFIX}"
     )
@@ -86,7 +87,7 @@ if __name__ == "__main__":
 
     TOKENIZER_NAME = "HuggingFaceTB/SmolLM3-3B"
 
-    dataset_path = f"az://{CONTAINER}/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
+    dataset_path = f"az://{IN_CONTAINER}/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
 
     df = DataFolder(dataset_path, **azure_kwargs)
 

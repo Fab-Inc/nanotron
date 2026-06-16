@@ -46,16 +46,20 @@ if __name__ == "__main__":
         "account_key": os.getenv("QURATING_SCORES_AZURE_STORAGE_KEY"),
     }
 
+    # CONTAINER = "quratingfiltered-noemb"
+    CONTAINER = "quratingfiltered-corrected-noemb"
+    # SUFFIX = "_filtered-qreval"
+    SUFFIX = ""
+
     SEED = 342045735
     SEED_MERGER = 25374973
 
     OUTPUT_FOLDER = Path(__file__).resolve().parent / "data"
 
-    # OUTPUT_FOLDER_MERGER = Path(__file__).resolve().parent / "data_merged"
     OUTPUT_FOLDER_MERGER = (
-        "az://quratingfiltered-preprocessed"
+        f"az://{CONTAINER}"
         "/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
-        f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}_filtered-qreval"
+        f"/tokenized-shuffled_seed-{SEED}_merge-seed-{SEED_MERGER}{SUFFIX}"
     )
     if isinstance(OUTPUT_FOLDER, str) and not OUTPUT_FOLDER.startswith("az://"):
         OUTPUT_FOLDER = Path(OUTPUT_FOLDER)
@@ -82,7 +86,7 @@ if __name__ == "__main__":
 
     TOKENIZER_NAME = "HuggingFaceTB/SmolLM3-3B"
 
-    dataset_path = "az://quratingfiltered-noemb/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
+    dataset_path = f"az://{CONTAINER}/qurater_gemma-3-4b-pt_ds-ours_v2-200000"
 
     df = DataFolder(dataset_path, **azure_kwargs)
 

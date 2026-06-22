@@ -20,8 +20,10 @@ s3_kwargs = {
     "secret": os.getenv("AWS_SECRET_ACCESS_KEY"),
 }
 
+run_name = "qr-filtered-run-30000"
+
 # %%
-nanotron_config_file = ROOT / "configs" / "fabai" / "qr-filtered-dclm-run-30000.yaml"
+nanotron_config_file = ROOT / "configs" / "fabai" / f"{run_name}.yaml"
 nanotron_config = Config.load_from_yaml(str(nanotron_config_file))
 
 lighteval_config_file = (
@@ -29,20 +31,19 @@ lighteval_config_file = (
     / "configs"
     / "fabai"
     / "lighteval"
-    / "lighteval-config_qr-filtered-dclm-run-30000.yaml"
+    / f"lighteval-config_{run_name}.yaml"
 )
 lighteval_config = get_config_from_file(
-    lighteval_config_file, config_class=LightEvalConfig
+    str(lighteval_config_file), config_class=LightEvalConfig
 )
 
 nanotron_config.lighteval = lighteval_config
-nanotron_config.lighteval.eval_config_override = str(lighteval_config_file)
+nanotron_config.lighteval.eval_config_override = str(lighteval_config_file) # type: ignore
 
 # %%
 checkpoints_dir = (
-    "s3://qurating-checkpoints-183631302286-eu-west-2-an/qr-filtered-dclm-run-30000/"
+    f"s3://qurating-checkpoints-183631302286-eu-west-2-an/{run_name}/"
 )
-
 if isinstance(checkpoints_dir, str):
     if checkpoints_dir.startswith("s3://"):
         s5cmd_path = str(ROOT / ".venv/bin/s5cmd")
@@ -78,7 +79,7 @@ for step in steps:
         ckpt_file = str(checkpoints_dir / f"{step}" / "config.yaml")
     else:
         print("Downloading checkpoint from s3")
-        local_path = ROOT / "checkpoints/smol-playbook-checkpoints" / f"{step}"
+        local_path = ROOT / "checkpoints/smol-playbook-checkpoints" / f"{run_name}" / f"{step}"
         if not local_path.exists():
             local_path.mkdir(exist_ok=True, parents=True)
             print(f"Saving to: {local_path}")

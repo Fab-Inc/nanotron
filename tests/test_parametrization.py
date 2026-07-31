@@ -8,7 +8,7 @@ from nanotron.config import ModelArgs, RandomInit, SpectralMupInit
 from nanotron.parallel import ParallelContext
 from nanotron.scaling.parametrization import ParametrizationMethod
 
-from tests.helpers.llama_helper import TINY_LLAMA_CONFIG, create_llama_from_config, get_llama_training_config
+from helpers.llama_helper import TINY_LLAMA_CONFIG, create_llama_from_config, get_llama_training_config
 
 
 @pytest.mark.parametrize("tp,dp,pp", [(2, 1, 1)])

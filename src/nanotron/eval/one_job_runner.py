@@ -131,11 +131,12 @@ def run_slurm_one_job(
 #SBATCH --nodes={nodes}
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task={slurm_config.cpus_per_task}
-#SBATCH --gpus={slurm_config.gpus_per_node}
+#SBATCH --gres=gpu:{slurm_config.gpus_per_node}
 #SBATCH --exclusive
 #SBATCH --qos={slurm_config.qos}
 #SBATCH --time={slurm_config.time}
 #SBATCH --output={eval_logs_path}/%j-{timestamp}.out
+#SBATCH --error={eval_logs_path}/%j-{timestamp}.err
 #SBATCH --requeue"""
 
     if slurm_config.reservation:
@@ -173,6 +174,7 @@ fi
 # Set environment variables
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 # export CUBLAS_WORKSPACE_CONFIG=":4096:8"
+export CUDA_VISIBLE_DEVICES=$(nvidia-smi -L | tail -n 1 | cut -d: -f1 | cut -d' ' -f2)
 
 # Set HuggingFace cache locations
 export HUGGINGFACE_HUB_CACHE={slurm_config.hf_cache}
@@ -295,6 +297,9 @@ echo "END TIME: $(date)"
         "PATH": os.environ["PATH"],
         "LD_LIBRARY_PATH": os.environ.get("LD_LIBRARY_PATH", ""),
         "HOME": os.path.expanduser("~"),
+        "HUGGING_FACE_HUB_TOKEN": os.environ["HUGGING_FACE_HUB_TOKEN"],
+        "AWS_ACCESS_KEY_ID": os.environ.get("AWS_ACCESS_KEY_ID", ""),
+        "AWS_SECRET_ACCESS_KEY": os.environ.get("AWS_SECRET_ACCESS_KEY", ""),
     }
 
     try:

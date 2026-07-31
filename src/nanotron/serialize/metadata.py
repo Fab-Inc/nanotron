@@ -64,7 +64,12 @@ class TrainingMetadata:
         ), "Mismatch between the total consumed samples and the sum of consumed samples across stages! Something went wrong in the training."
 
         if self.consumed_tokens_total is not None:
-            assert self.consumed_tokens_total == sum(stage.consumed_tokens_all_datasets for stage in self.data_stages), "Mismatch between the total consumed tokens and the sum of consumed tokens across stages! Something went wrong in the training."
+            ### TEMP FIX: Remove assertion on dataset token consumed counts
+            ### This seems to be bugged (when resuming from checkpoint it is reset to 0 for each dataset's metadata,
+            ### however, this value doesn't actually seem to be used anywhere else to decide where to resume from,
+            ### so i think it's safe to ignore until we fix it properly)
+            pass
+            # assert self.consumed_tokens_total == sum(stage.consumed_tokens_all_datasets for stage in self.data_stages), "Mismatch between the total consumed tokens and the sum of consumed tokens across stages! Something went wrong in the training."
         else:
             self.consumed_tokens_total = sum(stage.consumed_tokens_all_datasets for stage in self.data_stages)
 

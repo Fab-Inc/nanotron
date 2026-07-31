@@ -6,7 +6,7 @@ from nanotron.models.qwen import Qwen2Config
 from nanotron.parallel import ParallelContext
 from transformers import AutoTokenizer
 
-from tests.helpers.qwen_helper import create_qwen_from_config, get_qwen_training_config
+from helpers.qwen_helper import create_qwen_from_config, get_qwen_training_config
 
 
 @pytest.mark.parametrize("tp,dp,pp", [(1, 1, 1)])  # Simple test with single GPU

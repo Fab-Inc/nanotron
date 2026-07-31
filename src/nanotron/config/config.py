@@ -135,6 +135,7 @@ class S3UploadArgs:
     s5cmd_numworkers: Optional[int]
     s5cmd_concurrency: Optional[int]
     s5cmd_path: Optional[xPath]
+    s3_region: str = "us-east-1"
 
     def __post_init__(self):
         if isinstance(self.upload_s3_path, str):
@@ -157,7 +158,6 @@ class NanosetDatasetsArgs:
     return_positions: Optional[
         bool
     ] = True  # read positions stored in disk by datatrove if eos_token_id is None, else computed on the fly
-
     # Tokenized bytes dataset config
     skip_in_stream: Optional[bool] = False
     pad_samples_to_global_batch_size: Optional[bool] = False

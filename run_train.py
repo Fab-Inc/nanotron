@@ -12,6 +12,7 @@ import time
 from pprint import pformat
 from typing import Dict, Optional, cast
 
+from dotenv import load_dotenv
 import nanotron.distributed as dist
 from nanotron import logging
 from nanotron.config import (
@@ -50,6 +51,8 @@ try:
 except ImportError:
     hf_hub_version = None
     tf_version = None
+
+load_dotenv(override=True)
 
 logger = logging.get_logger(__name__)
 
@@ -167,7 +170,7 @@ def get_dataloader_from_data_stage(
                 input_pp_rank=input_pp_rank,
                 output_pp_rank=output_pp_rank,
                 micro_batch_size=trainer.micro_batch_size,
-                consumed_train_samples_stage=consumed_train_samples_stage,
+                consumed_train_samples=consumed_train_samples_stage,
                 dataloader_num_workers=data.num_loading_workers,
                 seed_worker=data.seed,
                 dataloader_drop_last=True,

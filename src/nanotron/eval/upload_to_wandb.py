@@ -1,9 +1,13 @@
+from pathlib import Path
 import json
 import s3fs
 import wandb
 import re
 import argparse
 from wandb.sdk.lib.runid import generate_id
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 
 def push_to_wandb(wandb_project, wandb_entity, model_name, results_path, train_step, consumed_tokens):
@@ -14,11 +18,21 @@ def push_to_wandb(wandb_project, wandb_entity, model_name, results_path, train_s
         "train_step": train_step,
     }
 
-    for result_file in sorted(s3.ls(results_path)):
+    if results_path.startswith("s3://"):
+        is_s3 = True
+        resfile_iter = sorted(s3.ls(results_path))
+    else:
+        resfile_iter = sorted(Path(results_path).rglob("*"))
+        is_s3 = False
+    for result_file in resfile_iter:
         if not result_file.endswith(".json"):
             continue
 
-        with s3.open(result_file, "r") as f:
+        if is_s3:
+            opener = s3.open
+        else:
+            opener = open
+        with opener(result_file, "r") as f:
             results = json.loads(f.read())["results"]
 
             for benchmark, metrics in results.items():

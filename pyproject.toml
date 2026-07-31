@@ -9,24 +9,28 @@ authors = [
     {name = "Thomas Wolf", email="thomas@huggingface.co"},
 ]
 readme = "README.md"
-requires-python = "~=3.10"
+requires-python = "~=3.11.0"
 classifiers = [
     "Topic :: Software Development"
 ]
 dependencies = [
-    "torch>=1.13.1",
+    "torch>=2.6.0",
     "pyyaml",
-    "numpy<2",
+    "numpy",
     "packaging",
     "safetensors",
     "dacite",
     "tqdm",
-    "datasets",
-    "torchtyping"
+    "datasets<=4.5.0",
+    "torchtyping",
+    "lighteval[multilingual]",
+    "pillow",
+    "matplotlib>=3.10.8",
+    "seaborn>=0.13.2",
+    "langcodes",
+    "language-data>=1.4.0",
+    "spacy>=3.8.11",
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]  # list of folders that contain the packages (["."] by default)
 
 [tool.ruff]
 line-length = 119
@@ -34,37 +38,73 @@ ignore = ["C901","E501"] # E501 ignores length violation handled by black
 select = ["C","E","F","I","W"]
 ignore-init-module-imports = true
 
-[project.optional-dependencies]
+[tool.uv.extra-build-dependencies]
+flash-attn = ["setuptools", "wheel", "torch", "psutil"]
+
+[tool.uv]
+no-build-isolation-package = ['flash-attn']
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = {index = "pytorch"}
+triton = {index = "pytorch"}
+lighteval = { git = "https://github.com/Fab-Inc/lighteval.git", rev = "develop-earlyversion"}
+datatrove = { git = "https://github.com/huggingface/datatrove.git", rev = "7939834eb71173181c658798d386c477a01342af"}
+fab-qurating = { git = "https://github.com/Fab-Inc/fab-qurating.git", rev = "do-adapt-oli-run-minimal-data" }
+
+[dependency-groups]
 dev = [
+    "wheel",
+    "psutil",
     "pre-commit",
-    "pylint"
+    "pylint",
+    "ipykernel",
 ]
 
 test = [
     "pytest",
-    "pytest-xdist"
+    "pytest-xdist",
+    "pytest-coverage",
 ]
 
 fast-modeling = [
+    "ninja",
+    "triton==3.*",
+    "setuptools",
     "flash-attn>=2.5.0,<2.7.0",
+    # "nv-grouped-gemm@git+https://github.com/fanshiqing/grouped_gemm@main"
 ]
 
 nanosets = [
-     "transformers",
-     "datatrove[io,processing]@git+https://github.com/huggingface/datatrove",
+     "transformers<5,>=4.53.0",
+     "datatrove[io,processing]",
      "numba",
 ]
 
 s3 = [
     "boto3",
-    "s3fs",
+    "botocore[crt]",
+    "s3fs>=2021",
     "s5cmd",
 ]
 
-[build-system]
-requires = [
-    "setuptools",
+az = [
+    "cloudpathlib[azure]",
+    "python-dotenv",
+    "adlfs",
+    "fab-qurating",
 ]
 
-[pytest]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nanotron"]
+
+[tool.pytest.custom_ini]
 norecursedirs="tests/helpers"

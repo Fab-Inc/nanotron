@@ -311,6 +311,7 @@ class DistributedTrainer:
                 s5cmd_concurrency=self.config.s3_upload.s5cmd_concurrency,
                 s5cmd_path=self.config.s3_upload.s5cmd_path,
                 dummy=dummy,
+                s3_region=self.config.s3_upload.s3_region,
             )
         else:
             self.s3_mover = None
@@ -1239,7 +1240,7 @@ class DistributedTrainer:
                     or self.iteration_step % self.config.lighteval.eval_interval == 0
                 ):
                     checkpoint_path = Path(self.config.checkpoints.checkpoints_path) / f"{self.config.general.step}"
-                    self.lighteval_runner.eval_single_checkpoint(checkpoint_path)
+                    self.lighteval_runner.eval_single_checkpoint([{"destination": str(checkpoint_path / "config.yaml")}])
 
     def save_checkpoint(self) -> Path:
         self.pre_save_checkpoint()

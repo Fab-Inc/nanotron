@@ -1,16 +1,117 @@
 import argparse
 import os
+import subprocess
+from pathlib import Path
+from shutil import rmtree
 from typing import Optional
 
-from nanotron.config import ParallelismArgs
+from dotenv import load_dotenv
+from typer import Option
+from typing_extensions import Annotated
 
-from lighteval.config.lighteval_config import (
+from nanotron.config import ParallelismArgs, get_config_from_file
+from nanotron.config.lighteval_config import (
     GenerationArgs,
     LightEvalConfig,
     LightEvalLoggingArgs,
     LightEvalTasksArgs,
 )
-from lighteval.main_nanotron import nanotron
+
+load_dotenv(override=True)
+
+
+CACHE_DIR: str = os.getenv("HF_HOME", "/scratch")
+
+HELP_PANNEL_NAME_1 = "Common Paramaters"
+HELP_PANNEL_NAME_2 = "Logging Parameters"
+HELP_PANNEL_NAME_3 = "Debug Paramaters"
+HELP_PANNEL_NAME_4 = "Modeling Paramaters"
+
+
+SEED = 1234
+
+
+def run_transformers(
+    checkpoint_path: Annotated[
+        str,
+        Option(help="Path to the hf transformers checkpoint dir."),
+    ],
+    lighteval_config_path: Annotated[
+        str, Option(help="Path to a YAML config to be used for the evaluation.")
+    ],
+    cache_dir: Annotated[
+        str, Option(help="Cache directory for datasets and models.")
+    ] = CACHE_DIR,
+):
+    """
+    Evaluate models using nanotron as backend.
+    """
+    from lighteval.config.lighteval_config import LightEvalConfig
+    from lighteval.logging.evaluation_tracker import EvaluationTracker
+    from lighteval.logging.hierarchical_logger import htrack_block
+    from lighteval.models.base_model import BaseModel, BaseModelConfig
+    from lighteval.pipeline import Pipeline, PipelineParameters
+    from lighteval.utils.utils import EnvConfig
+
+
+    env_config = EnvConfig(token=os.getenv("HF_TOKEN"), cache_dir=cache_dir)
+
+    with htrack_block("Load nanotron config"):
+        # # Create nanotron config
+        # if not checkpoint_path.endswith(".yaml"):
+        #     raise ValueError("The checkpoint path should point to a YAML file")
+
+        # model_config = get_config_from_file(
+        #     checkpoint_path,
+        #     config_class=Config,
+        #     model_config_class=None,
+        #     skip_unused_config_keys=True,
+        #     skip_null_keys=True,
+        # )
+
+        # We are getting an type error, because the get_config_from_file is not correctly typed,
+        lighteval_config: LightEvalConfig = get_config_from_file(lighteval_config_path, config_class=LightEvalConfig)  # type: ignore
+        basemodel_config = BaseModelConfig(checkpoint_path)
+        basemodel_config.model_parallel = False
+        base_model = BaseModel(env_config=env_config, config=basemodel_config)
+        # nanotron_config = FullNanotronConfig(lighteval_config, model_config)
+
+    evaluation_tracker = EvaluationTracker(
+        output_dir=lighteval_config.logging.local_output_path,
+        # hub_results_org=lighteval_config.logging.results_org,
+        # public=lighteval_config.logging.public_run,
+        push_to_hub=lighteval_config.logging.push_results_to_hub,
+        push_to_tensorboard=lighteval_config.logging.push_results_to_tensorboard,
+        # save_details=lighteval_config.logging.save_details,
+        tensorboard_metric_prefix=lighteval_config.logging.tensorboard_metric_prefix,
+        # nanotron_run_info=nanotron_config.nanotron_config.general,
+    )
+
+    pipeline_parameters = PipelineParameters(
+        launcher_type=None,
+        env_config=env_config,
+        job_id=os.environ.get("SLURM_JOB_ID", 0),
+        dataset_loading_processes=lighteval_config.tasks.dataset_loading_processes,
+        custom_tasks_directory=lighteval_config.tasks.custom_tasks,
+        override_batch_size=lighteval_config.batch_size,
+        num_fewshot_seeds=1,
+        max_samples=lighteval_config.tasks.max_samples,
+        use_chat_template=False,
+        system_prompt=None,
+    )
+
+    pipeline = Pipeline(
+        tasks=lighteval_config.tasks.tasks,
+        pipeline_parameters=pipeline_parameters,
+        evaluation_tracker=evaluation_tracker,
+        model=base_model,
+    )
+
+    pipeline.evaluate()
+
+    pipeline.show_results()
+
+    pipeline.save_and_push_results()
 
 
 def create_lighteval_config(
@@ -142,9 +243,11 @@ def save_lighteval_config_as_yaml(config: LightEvalConfig, output_path: str) -> 
             },
             "batch_size": config.batch_size,
             "generation": {
-                "sampler": config.generation.sampler.name.lower()
-                if hasattr(config.generation.sampler, "name")
-                else config.generation.sampler,
+                "sampler": (
+                    config.generation.sampler.name.lower()
+                    if hasattr(config.generation.sampler, "name")
+                    else config.generation.sampler
+                ),
                 "temperature": config.generation.temperature,
                 "top_k": config.generation.top_k,
                 "top_p": config.generation.top_p,
@@ -208,8 +311,25 @@ if __name__ == "__main__":
     else:
         lighteval_config_path = args.lighteval_override
 
-    nanotron(
-        checkpoint_config_path=args.checkpoint_config_path,
+    # nanotron(
+    #     checkpoint_config_path=args.checkpoint_config_path,
+    #     lighteval_config_path=lighteval_config_path,
+    #     cache_dir=args.cache_dir,
+    # )
+    hf_path = str(Path(args.checkpoint_config_path).parents[1] / 'hf') + "/"
+    cmd = [
+        "python",
+        "scripts/fabai/convert/convert_nanotron_to_hf.py",
+        f"--checkpoint_path={Path(args.checkpoint_config_path).parent}",
+        f"--save_path={hf_path}"
+    ]
+    subprocess.run(cmd)
+
+    run_transformers(
+        checkpoint_path=hf_path,
         lighteval_config_path=lighteval_config_path,
-        cache_dir=args.cache_dir,
     )
+
+    rmtree(hf_path)
+
+

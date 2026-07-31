@@ -302,18 +302,18 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
         filename_pattern: str = None,
         recursive: bool = True,
         token_size: int = 2,
-        max_tokens: int | None = None,
+        # max_tokens: int | None = None,
         shuffle: bool = False,
         seed: int = 42,
         return_positions: bool = False,
-        eos_token_id: int | None = None,
+        positions_from_eos_token_id: int | None = None,
         skip_in_stream: bool = True,
         num_samples: Optional[int] = None,
         folder_read_path: Optional[str] = None,
         force_update_cache: bool = os.environ.get("FORCE_UPDATE_CACHE_S3", 0) == "1",
     ):
         log_rank("Using DatatroveFolderDataset", logger=logger, level=logging.INFO, rank=0)
-        if return_positions and not eos_token_id:
+        if return_positions and not positions_from_eos_token_id:
             log_rank(
                 "Using DatatroveFolderDataset with return_positions=True but no eos_token_id provided. It can be slow...",
                 logger=logger,
@@ -324,7 +324,8 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
         # Handle S3 paths specially
         matched_files = None
         file_sizes = None
-        if folder_path.startswith("s3://"):
+        ### adding "az://" as another option here, as it is also supported by fsspec with adlfs installed
+        if folder_path.startswith(("s3://", "az://")):
             cache_dir = os.path.expanduser("~/.cache/nanotron/s3_cache")
             os.makedirs(cache_dir, exist_ok=True)
 
@@ -367,7 +368,7 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
                             level=logging.INFO,
                             rank=0,
                         )
-                        from datatrove.utils.dataset import url_to_fs
+                        from fsspec import url_to_fs
 
                         fs_folder, stripped_folder_path = url_to_fs(folder_path)
                         matched_files = (
@@ -423,14 +424,14 @@ class TokenizedBytesFolderDataset(DatatroveFolderDataset):
             filename_pattern=filename_pattern,
             recursive=recursive,
             token_size=token_size,
-            max_tokens=max_tokens,
+            # max_tokens=max_tokens,
             shuffle=shuffle,
             seed=seed,
             return_positions=return_positions,
-            eos_token_id=eos_token_id,
-            read_path=folder_read_path,
-            matched_files=matched_files,
-            file_sizes=file_sizes,
+            positions_from_eos_token_id=positions_from_eos_token_id,
+            # read_path=folder_read_path,
+            # matched_files=matched_files,
+            # file_sizes=file_sizes,
         )
 
         self.subset_log = TBFolderDatasetLog(
@@ -506,10 +507,10 @@ def build_dataset(
         seq_len=seq_length,
         recursive=False,
         token_size=token_size,
-        max_tokens=max_tokens, # TODO: remove
+        # max_tokens=max_tokens, # TODO: remove
         shuffle=shuffle,
         return_positions=return_positions,  # if set to True, the position ids are directly read from datatrove
-        eos_token_id=eos_token_id,
+        positions_from_eos_token_id=eos_token_id,
         seed=seed,
         skip_in_stream=skip_in_stream,
         num_samples=num_samples,
